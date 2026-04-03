@@ -1,0 +1,4 @@
+backend_files/
+archive/
+examples/inputs/merged_cohort_example.vcf.gz*
+examples/inputs/single_genome_example.vcf.gz*

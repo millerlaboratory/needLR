@@ -5,14 +5,27 @@
 
 🚧 ** **_needLR  is currently a beta version and actively under construction_** ** 🚧
 
-needLR_v3.5 has replaced needLR_v3.4 as of December 13th, 2025. Major changes include:
+needLR_v4.0 has replaced needLR_v3.5 as of April 3rd, 2026. Major changes include:
+* needLR modes are now subcommands -- please see updated usage
+* custom control sets may be used with any subcommand
+* input can be provided as a single VCF, a list of files, or a merged multi sample VCF
+* analysis can be restricted to a smaller chromosomal region
+* annotations can be selected a la carte
+* OMIM and GenCC annotations are now multicolumn for easier sorting
+* needLR trio and duo preserve parental read support levels
+* a reference fasta is no longer required -- currently needLR only works for hg38
+* vcfs do not need to be bgzipped and indexed
+
+Changes from 3.4 -> 3.5
 * Increase to 500 control sampels from the 1KGP-LRSC
 * New annotations: pLI (Probability of Loss-of-function Intolerance) scores and [ORegAnno](https://www.bcgsc.ca/resources/software/oreganno) annotation
 * Gene annotation buffer is increased from 1kbp to 5kbp
 * UTRs and coding exons (CDS) are annotated seperately
 * Vamos STR and VNTR are combined into one annotation
 
-Access the depricated needLR_v3.4 README [here](https://github.com/jgust1/needLR/blob/main/needLR_v3.4_README_depricated_20251213.md)
+Access the depricated needLR_v3.4 README [here](https://github.com/jgust1/needLR/blob/main/docs/needLR_v3.4_README_depricated_20251213.md)
+
+Access the depricated needLR_v3.5 README [here](https://github.com/jgust1/needLR/blob/main/docs/needLR_v3.4_README_deprecated_20260403.md)
 
 #### Please cite our 2025 needLR preprint:  
 <sup>*Gustafson JA, Lin J, Eichler EE, Miller DE. needLR: Long-read structural variant annotation with population-scale frequency estimation. arXiv preprint arXiv:2512.08175. 2025 Dec 9.*</sup>
@@ -53,318 +66,171 @@ This version of needLR incorporates SV calls made by Sniffles_v2.6.2 for 500 1KG
 4. Assign ancestry aware allele frequencies to each query SV based on 1KGP sample input
 5. Annotate query sample SVs with genomic context, OMIM phenotype association, and Hardy-Weinberg equilibrium check
 
-needLR_v3.5 offers multiple functionalities:
-* [needLR_basic](#run-needlr_v35_basic): Compares one query vcf to a pre-merged, multisample vcf of 500 1KGP samples and annotates the SVs in the query individual.
-* [needLR_duo](#run-needlr_v35_duo): Compares a query sample and parental sample to a pre-merged, multisample vcf of 500 1KGP samples and annotates the SVs in the query individual. This function uniquely annotates the SVs from the query vcf as being "inherited" or "uncertain" based on SVs from the parental vcf.
-* [needLR_trio](#run-needlr_v35_trio): Compares a query sample and two parental samples (maternal and paternal) to a pre-merged, multisample vcf of 500 1KGP samples and annotates the SVs in the query individual. This function uniquely annotates the SVs from the query vcf as being "inherited" or "de novo" based on SVs from the parental vcfs.
-* [needLR_custom_controls](#run-needlr_v35_custom_controls): Compares one query vcf to a pre-merged, multisample vcf of a control/unaffected cohort of samples defined by the user and annotates the SVs in the query individual.
-* [needLR_cohort](#run-needlr_v35_cohort): Accepts a pre-merged, multisample vcf of an affected cohort and annotates the SVs across the cohort, identifying SVs that are present in one or more affected individuals and absent from the 500 1KGP control samples.
-* [needLR_annotate_bed](#run-needlr_v35_annotate_bed): Annotates any 10-colunm bed file with needLR annotations
+needLR_v4.0 has three subcommands:
+* [annotate](#subcommand-annotate): Compares one or more query vcfs to a pre-merged, multisample vcf of 500 1KGP samples and annotates the SVs in the query individual. A custom control set may optionally be provided. If a multisample vcf is provided, SVs that are present in one more affected individuals in the cohort are annotated;.
+* [comparator](#subcommand:-comparator): Compares a single query sample and one or two parental samples to a pre-merged, multisample vcf of 500 1KGP samples and annotates the SVs in the query individual. This function uniquely annotates the SVs from the query vcf as being "inherited", "maternal", "paternal", "de_novo", or "uncertain" based on SVs from the parental vcf(s).
+* [bed](#subcommand:-bed): Annotates any sorted bed file with needLR annotations
+
+[Follow these steps to make a custom cohort for use either as a query or a control.](https://github.com/jgust1/needLR/blob/main/docs/custom_cohort.md)
 
 >[!NOTE]
 >needLR is currently optimized for sniffles_v2.6.2 SV calling, truvari_v4.2.2 merging, and all backend annotation data is based on the GRCh38 reference genome
 
 ## INSTALLATION AND SET UP
 
-#### needLR requires an environment with the following dependencies:
+Please install needLR using conda or apptainer.
+
+Alternatively, you can build a conda environment using the `.yaml` file: `envs/needLR-4.0.yaml` and then clone this repository.
+If using a custom installation, you must use flag `-B` with your path to `needLR/backend_files`. These files are included in the conda installation and apptainer, but are not hosted on github. You can download those here:
+
+```
+wget https://s3.amazonaws.com/1000g-ont/needLR/needLR_v4.0_backend_files.tar.gz
+tar -xvzf needLR_v4.0_backend_files.tar.gz
+```
+
+### Dependencies included in package:
 
 [truvari v4.2.2](https://github.com/acenglish/truvari/wiki) <sup>1</sup>  
 [bedtools v2.31.1](https://github.com/arq5x/bedtools2/) <sup>2</sup>  
-[bcftools v1.19](https://github.com/samtools/bcftools/) <sup>3</sup>  
+[bcftools v1.23.1](https://github.com/samtools/bcftools/) <sup>3</sup>  
 
 <sup>1</sup> <sub>*English, Adam C et al. “Truvari: refined structural variant comparison preserves allelic diversity.” Genome biology vol. 23,1 271. 27 Dec. 2022, doi:10.1186/s13059-022-02840-6*</sub>    
 <sup>2</sup> <sub>*Quinlan AR, Hall IM. BEDTools: a flexible suite of utilities for comparing genomic features. Bioinformatics. 2010;26(6):841-842. doi:10.1093/bioinformatics/btq033*</sub>  
 <sup>3</sup> <sub>*Danecek P, Bonfield JK, Liddle J, et al. Twelve years of SAMtools and BCFtools. Gigascience. 2021;10(2):giab008. doi:10.1093/gigascience/giab008*</sub>  
 
 
-#### Download the needLR_v3.5_local directory from AWS into a parent directory you want to run needLR from
-```
-wget https://s3.amazonaws.com/1000g-ont/needLR/needLR_v3.5_local.tar.gz
-```
+## USAGE
 
-#### Extract the directory 
-```
-tar -xvzf needLR_v3.5_local.tar.gz
-```
-This will create a working directory called needLR_v3.5_local. Everything needed to run needLR is inside.
-
-
-#### Navigate into the working directory
-```
-cd needLR_v3.5_local
-```
-This is what you should see:
-```
-backend_files/
-EXAMPLE/
-needLR_output/
-needLR_v3.5_annotate_bed.sh
-needLR_v3.5_basic.sh
-needLR_v3.5_cohort.sh
-needLR_v3.5_custom_controls.sh
-needLR_v3.5_duo.sh
-needLR_v3.5_trio.sh
-```
-
-#### To make the scripts executable, do the following for each
-```
-chmod +x script.sh
-```
-
-## RUN needLR_v3.5_basic
-
-#### needLR_v3.5_basic takes 2 required arguments:
-
-| Flag | Description |
-| :------------ |:-------------|
-|-g| A fasta file for a reference genome (we use the hg38 reference recommended [here](https://lh3.github.io/2017/11/13/which-human-reference-genome-to-use))|
-|-l| A .txt file that lists the full file path(s) to the query vcf(s) (The vcfs must be gzipped (*.vcf.gz) and have an index in the same directory as the vcf). See above for recommended sniffles2 version/parameters|
-
-#### Example:
-```
-./needLR_v3.5_basic.sh \
--g /file/path/to/reference/genome.fa \
--l /file/path/to/vcf_list.txt
-```
-
-## RUN needLR_v3.5_duo
-
-#### needLR_v3.5_duo takes 3 required arguments:
 >[!NOTE] 
->Flags for this command have been updated since needLR_v3.4
+>Options and commands have been updated since needLR v3.5
 
-| Flag | Description |
+`needLR {subcommand} <options> {input.vcf.gz}`
+
+  Global options:
+  ``` -B                     : [ path to folder containing backend files for non-conda custom installation ]
+   -T                     : [ additional CPU threads to pass to bcftools ]
+   -R                     : [ restrict analysis to region (e.g. chr1:23456-34567) ]
+   -H                     : [ help ]
+   ```
+
+### Subcommand: annotate
+
+`annotate` requires VCF input, either as a single positional argument, with option `-Q` to provide a multisample VCF, or with flag `-L` to provide a list of input files. 
+
+Additional options:
+
+| Option | Description |
 | :------------ |:-------------|
-|-g| A fasta file for a reference genome (we use the hg38 reference recommended [here](https://lh3.github.io/2017/11/13/which-human-reference-genome-to-use))|
-|-p| The full file path to the query/proband vcf (The vcf must be gzipped (*.vcf.gz) and have an index in the same directory as the vcf) |
-|-r| The full file path to the parental vcf (The vcf must be gzipped (*.vcf.gz) and have an index in the same directory as the vcf) |
+|-T| additional CPU threads to pass to bcftools |
+|-C| full path to a control cohort VCF, merged with Truvari |
+|-Q| full path to a query cohort VCF, merged with Truvari |
+|-O| output directory name (default is needLR_output relative to current directory) |
+|-R| restrict analysis to a region (e.g. chr22:12345-23456 **or** chr22)|
+|-L| A .txt file that lists the full file path(s) to the query vcf(s)  See above for recommended sniffles2 version/parameters |
 
-#### Example:
+General Annotation options
+|--all| additional CPU threads to pass to bcftools (default TRUE) |
+
+A la Carte Annotation options
+|--omim| annotate VCF with OMIM phenotypes and modes of inheritance (default FALSE) |
+|--hpo| annotate VCF with OMIM phenotype associated HPO terms (default FALSE) |
+|--gencc| annotate VCF with GENCC phenotypes, level of support, and modes of inheritance (default FALSE) |
+|--pli| annotate VCF with probability of loss-of-function intolerance (pLI) scores from gnomADg v4.1 (default FALSE) |
+
+Position Annotation options:
+|--utr| annotate SV UTR overlap (gencodev45) (default FALSE) |
+|--cds| annotate SV coding exon overlap (gencodev45) (default FALSE) |
+|--oreganno| annotate SV regulatory element overlap (ORegAnno)(default FALSE) |
+|--tre| annotate SV tandem repeat overlap (VAMOS) (default FALSE) |
+|--mapflags| annotate SV with overlap of difficult to map regions (centromeres, telomeres, repeats,segdups, gaps, homopolymers) (default FALSE) |
+|--hiconf| annotate SVs fully contained in high-confidence regions (default FALSE) |
+
+#### Examples
+
+Compare a single query VCF to the 500 1KGP database and apply all available annotations
+
 ```
-./needLR_v3.5_duo.sh \
--g /file/path/to/reference/genome.fa \
--p /file/path/to/proband.vcf.gz \
--r /file/path/to/parent.vcf.gz
+needLR annotate examples/inputs/single_genome_example_chr22.vcf.gz
+```
+
+Compare a list of query VCFs to a different merged VCF and annotate with only OMIM and hiconfidence regions
+```
+needLR annotate -L examples/inputs/list_of_samples.txt -C examples/inputs/merged_cohort_chr22.vcf.gz --omim --hiconf
+```
+
+Compare the SVs in a merged cohort VCF to the 500 1KGP database and limit analysis to a smaller region
+```
+needLR annotate -Q examples/inputs/merged_cohort_chr22.vcf.gz -R chr22:10731900-11588324
+```
+
+### Subcommand: comparator
+
+`comparator` requires a single query VCF and at least one parental VCF provided with option `-P`
+
+All options
+
+| Option | Description |
+| :------------ |:-------------|
+|-P| full path to one or two parental VCFs[gz], separated by commas. Maternal vcf is assumed to be first vcf |
+|-T| additional CPU threads to pass to bcftools |
+|-C| full path to a control cohort VCF, merged with Truvari |
+|-R| restrict analysis to a region (e.g. chr22:12345-23456 **or** chr22)|
+
+All annotation options available in `annotate` are also available in `comparator`.
+
+#### Examples
+
+Compare a proband VCF to two parental VCFs along with the 500 1KGP database and apply all available annotations
+
+```
+needLR comparator -P examples/inputs/trio/HG007_Mo_hantrio_sniffles_chr22.vcf.gz,examples/inputs/trio/HG006_Fa_hantrio_sniffles.chr22.vcf.gz examples/inputs/trio/HG005_Pb_hantrio_sniffles_chr22.vcf.gz
+```
+
+Compare a proband VCF to a single parent VCF along with a custom control VCF and apply only gencc annotations
+```
+needLR comparator -P examples/inputs/trio/HG007_Mo_hantrio_sniffles_chr22.vcf.gz -C examples/merged_cohort_chr22.vcf.gz --gencc examples/inputs/trio/HG005_Pb_hantrio_sniffles_chr22.vcf.gz
 ```
 
 >[!NOTE]
 >needLR_duo is imperfect in predicting inherited vs. _de novo_ SVs. The annotation is fully dependent on how well the SVs were merged. We recommend using needLR as a starting point and then manually inspecting inheritance in IGV. Observe extra precaution in VNTR regions.
 
-## RUN needLR_v3.5_trio
->[!NOTE] 
->Flags for this command have been updated since needLR_v3.4
+### Subcommand: bed
 
-#### needLR_v3.5_trio takes 4 required arguments:
+`bed` requires only the path to a sorted bed file. Annotation columns are appended to the end of any existing columns
 
-| Flag | Description |
+All options
+
+| Option | Description |
 | :------------ |:-------------|
-|-g| A fasta file for a reference genome (we use the hg38 reference recommended [here](https://lh3.github.io/2017/11/13/which-human-reference-genome-to-use))|
-|-p| The full file path to the query/proband vcf (The vcf must be gzipped (*.vcf.gz) and have an index in the same directory as the vcf) |
-|-r| The full file path to the first parental vcf (The vcf must be gzipped (*.vcf.gz) and have an index in the same directory as the vcf) |
-|-R| The full file path to the second parental vcf (The vcf must be gzipped (*.vcf.gz) and have an index in the same directory as the vcf) |
+|-L| .txt file list of full file paths to query beds |
+|-O| output directory name (default is needLR_output relative to current directory) |
+|-R| restrict analysis to a region (e.g. chr22:12345-23456 **or** chr22)|
 
-#### Example:
-```
-./needLR_v3.5_trio.sh \
--g /file/path/to/reference/genome.fa \
--p /file/path/to/proband.vcf.gz \
--r /file/path/to/parent1.vcf.gz \
--R /file/path/to/parent2.vcf.gz
-```
+All annotation options available in `annotate` are also available in `bed`.
 
->[!NOTE]
->needLR_trio is imperfect in predicting inherited vs. _de novo_ SVs. The annotation is fully dependent on how well the SVs were merged. We recommend using needLR as a starting point and then manually inspecting inheritance in IGV. Observe extra precaution in VNTR regions.
+#### Examples
 
-## RUN needLR_v3.5_custom_controls
-
-#### needLR_v3.5_custom_controls takes 5 required arguments:
-
-| Flag | Description |
-| :------------ |:-------------|
-|-g| A fasta file for a reference genome (we use the hg38 reference recommended [here](https://lh3.github.io/2017/11/13/which-human-reference-genome-to-use))|
-|-l| A .txt file that lists the full file path(s) to the query vcf(s) (The vcfs must be gzipped (*.vcf.gz) and have an index in the same directory as the vcf)|
-|-c| A Truvari-merged, sorted, and tabix'd vcf of the the user's control samples (see below for instructions on generating this)  |
-|-s| A .txt file with the names of the samples in the exact order they are in in the Truvari-merged vcf |
-|-n| The total number of samples in the Truvari-merged vcf|
-
-#### To prepare a custom cohort to be used in needLR:
-#### 1) Prepare all of the individual vcfs to include SVs that are >=50bp and are on full-length chromosomes 1-22, X, Y, and M
+Annotate kinnex data, limit to chr22, apply all available annotations
 
 ```
-bcftools view -i '(INFO/SVTYPE="BND") || (INFO/SVTYPE="INS" || INFO/SVTYPE="DEL" || INFO/SVTYPE="DUP" || INFO/SVTYPE="INV") && (INFO/SVLEN > 49 || INFO/SVLEN < -49) && GT!="0/0" && GT!="0|0"' -r chr1,chr2,chr3,chr4,chr5,chr6,chr7,chr8,chr9,chr10,chr11,chr12,chr13,chr14,chr15,chr16,chr17,chr18,chr19,chr20,chr21,chr22,chrX,chrY,chrM -o preprocessed.vcf original.vcf
-```
-#### 2) Merge the preprocessed vcfs using bcftools merge and tabix the output (where sample_path_list.txt is a list of all of the sample vcfs to merge in the order they should be in). This merge only merges exact variant matches and outputs a multisample vcf
-```
-bcftools merge \
--m none \
---force-samples \
--l sample_path_list.txt \
--Oz -o bcftools_merged.vcf.gz
-
-tabix bcftools_merged.vcf.gz
+needLR bed -R chr22 inputs/examples/kinnex_example_chr22.bed
 ```
 
-#### 3) Use Truvari to further merge the bcftools-merged vcf. Below are the parameters used in needLR_v3.5 itself (these can be customized). Sort, gzip, and tabix the Truvari merged output
-
-```
-truvari collapse \
--i bcftools_merged.vcf.gz \
--o truvari_merged.vcf \
--c truvari_collapsed.vcf \
--f reference_gemome.fa \
--k common \
--s 50 \
--S 10000000 \
--r 2000 \
--p 0 \
--P 0.2 \
--O 0.2
-
-bcftools sort truvari_merged.vcf > truvari_merged_sorted.vcf
-
-bgzip truvari_merged_sorted.vcf
-
-tabix truvari_merged_sorted.vcf.gz
-```
-#### Example:
-```
-./needLR_v3.5_custom_controls.sh \
--g /file/path/to/reference/genome.fa \
--l /file/path/to/list.txt \
--t /file/path/to/truvari_merged_sorted.vcf.gz \
--n /file/path/to/sample_names.txt \
--s 100
-```
-
-#### 4) If you wish to combine your control sample set with the 1KGP 500 sample control vcf, you can do another Truvari merge (where sample_path_list2.txt is a file with the full file path to truvari_merged_sorted.vcf.gz and /needLR_v3.5_local/backend_files/UWONT_500_sniffles_2.6.2_preproc2_T31_v4.2.2.vcf.gz) 
-#### Note: Ancestry-specific population/allele frequencies will not be output after the 1KGP 500 set is combined with a custom control set. 
-#### Note: Remember to add 500 to the total number of samples (flag -n)
-
-```
-bcftools merge \
--m none \
---force-samples \
--l sample_path_list2.txt \
--Oz -o bcftools_merged2.vcf.gz
-
-tabix bcftools_merged2.vcf.gz
-
-truvari collapse -i bcftools_merged2.vcf.gz \
--o truvari_merged2.vcf \
--c truvari_collapsed2.vcf \
--f reference_gemome.fa \
--k common \
--s 50 \
--S 10000000 \
--r 2000 \
--p 0 \
--P 0.2 \
--O 0.2
-
-bcftools sort truvari_merged2.vcf > truvari_merged2_sorted.vcf
-
-bgzip truvari_merged2_sorted.vcf
-
-tabix truvari_merged2_sorted.vcf.gz
-```
-
-#### Example:
-```
-./needLR_v3.5_custom_controls.sh \
--g /file/path/to/reference/genome.fa \
--l /file/path/to/list.txt \
--t /file/path/to/truvari_merged2_sorted.vcf.gz \
--n /file/path/to/sample_names.txt \
--s 600
-```
-
-## RUN needLR_v3.5_cohort
-
-#### needLR_v3.5_cohort takes 4 required arguments:
-
-| Flag | Description |
-| :------------ |:-------------|
-|-g| A fasta file for a reference genome (we use the hg38 reference recommended [here](https://lh3.github.io/2017/11/13/which-human-reference-genome-to-use))|
-|-v| A gzipped and tabixed truvari-merged query cohort vcf|
-|-a| A .txt file list of sample names in the order they are in -v  |
-|-d| The number of samples in -v |
-
-#### Note: The input query cohort vcf should be generated using all of the same parameters as the 1KGP control samples:
-
-```
-        sniffle_v2.6.2_ \
-            --input sample.bam \
-            --reference hg38_reference.fa \
-            --output-rnames \
-            --vcf sample.vcf \
-            --allow-overwrite \
-            --tandem-repeats human_GRCh38_no_alt_analysis_set.trf.bed
-```
-```
-bcftools merge -m none --force-samples -l COHORT_vcf_path_list.txt -Oz -o COHORT_merged.vcf.gz
-
-tabix bcftools_merged.vcf.gz
-
-truvari_v4.2.2 collapse \
--i COHORT_merged.vcf.gz \
--o truvari_merged_COHORT.vcf \
--c truvari_collapsed_COHORT.vcf \
--f reference_gemome.fa \
--k common \
--s 50 \
--S 10000000 \
--r 2000 \
--p 0 \
--P 0.2 \
--O 0.2
-
-bcftools sort truvari_merged_COHORT.vcf > truvari_merged_COHORT_sorted.vcf
-
-truvari_merged_COHORT_sorted.vcf
-
-tabix truvari_merged_COHORT_sorted.vcf.gz
-```
-
-#### Example:
-```
-./needLR_v3.5_cohort.sh \
--g /file/path/to/reference/genome.fa \
--v truvari_merged_COHORT_sorted.vcf.gz 
--a query_sample_names.txt \
--d 100
-```
-
-## RUN needLR_v3.5_annotate_bed
->[!NOTE] 
->This command functionally replaces needLR_3.4_annotate_multisample but implements different flags
-
-#### needLR_v3.5_annotate_bed takes 2 required arguments:
-
-| Flag | Description |
-| :------------ |:-------------|
-|-g| A fasta file for a reference genome (we use the hg38 reference recommended [here](https://lh3.github.io/2017/11/13/which-human-reference-genome-to-use))|
-|-b| A 10-column .bed file. Columns 1-4 are chr, start, end, SV type, SV length. Columns 6-10 can be any other data (zygosity/ allele frequency/ etc.). Remaining columns should have a placeholder character.
-
-#### Example:
-```
-./needLR_v3.5_annotate_bed.sh \
--g /file/path/to/reference/genome.fa \
--b /file/path/to/bed_list.txt
-```
 
 ## OUTPUT
 
-Each needLR instance will spawn an output subdirectory within the `/needLR_v3.5_local/needLR_output` directory. 
-The output files will be:
+Output for each VCF is contained in a subdirectory of `needLR_output` by default. Modify this parent output directory with flag `-O`
+
+Output:
 
 | Output | Description |
 |:------------|:-------------|
 |{SAMPLE_ID}_RESULTS.txt| Annotated query or cohort SVs (the main output)|
-|{SAMPLE_ID}_RESULTS_unique.txt| Annotated SVs that are unique to the query sample (not seen in the control cohort) |
+|{SAMPLE_ID}_RESULTS_unique.txt| Annotated SVs that are unique to the query sample or cohort (not seen in the control cohort) |
 |{SAMPLE_ID}_RESULTS_0.01.txt| Annotated SVs with an AF <=0.01  (in relation to the control cohort)|
-|{SAMPLE_ID}_RESULTS_cohort_unique.txt| SVs unique to query cohort (needLR_cohort only)|
 |{SAMPLE_ID}_RESULTS.vcf.gz| Annotated query SVs in vcf format |
-|{SAMPLE_ID}_RESULTS.vcf.gz.tbi | Tabix'd vcf |
+|{SAMPLE_ID}_RESULTS_denovo.txt| Annotated SVs that are unique to the proband (`comparator` only) |
+
 
 >[!NOTE]
 >needLR generates many temporary files when running, this can add up to ~20Gb
@@ -374,9 +240,11 @@ The output files will be:
 The `{SAMPLE_ID}_RESULTS*.txt` files can easily be opened in Excel. 
 _Be sure that Excel is set up to delimit columns by tab (and only tab)_
 
-Below are the output columns. Some are specific to the needLR function used. "Query SV" is used to refer to the SV identified in the proband/query sample _or_, in the case of needLR_v3.5_annotate_bed, it is any SV. 
+Below are the output columns. Some are specific to the needLR subcommand used. "Query SV" is used to refer to the SV identified in the proband/query sample _or_, in the case of `bed`, it is any SV. 
 >[!NOTE]
 >The SV start, end, length, REF, and ALT are the data from the most common SV of the merged SVs at that locus. Thus, this data in "query only" SVs (SVs seen in the query sample but not the control samples) will exactly match the query original vcf. If the query sample has an SV that is shared with control samples, it will be annotated with the data from the most common SV in that merge. 
+
+### Columns always output when using VCF input
 
 | Column Name           | Column Description                                                                 |
 |:-----------------------|:-----------------------------------------------------------------------------------|
@@ -387,25 +255,27 @@ Below are the output columns. Some are specific to the needLR function used. "Qu
 | ALT             | Alternate allele associated with the query SV   |
 | SV_Length             | Query SV length                                                                    |
 | SV_Type               | Query SV type                                                                      |
-| Cohort_support        | Sample ID of the samples in the input query cohort with the SV |
-| Cohort_Pop_Count  | How many query cohort samples have the SV |
-| Cohort_Pop_Freq | Frequency (%) of query cohort samples with SV |
-| Cohort_Allele_Count    | How many query cohort alleles have the SV |
-| Cohort_Allele_Freq    | Frequency (%) of query cohort alleles with SV |
 | Query ID               | Unique ID of the query sample                                                                     |
-| 1KGP_support          | Samples in the 1KGP 500 sample control dataset that share the SV with the query sample |
 | Ctrl_support          | Samples in the control dataset that share the SV with the query sample |
-| Genotype              | Query SV genotype                                                                  |
-| Alt_reads             | Number of reads in the query sample supporting the SV                              |
-| Ref_reads             | Number of reference reads in the query sample at the SV locus                      |
-| Total_reads           | Total number of reads at the SV locus (in the query sample)                        |
-| Parent1_genotype  |   Genotype of SV in parent1   |
-| Parent2_genotype  |   Genotype of SV in parent2   |
-| Inheritance   |   Predicted inheritence pattern |
 | Allele_Freq_ALL       | Allele frequency of SV in control dataset                                   |
+| Pop_Count_ALL         | How many control samples have the SV                             |
+| Pop_Freq_ALL          | Frequency (%) of control samples with SV                         |
+| Allele_Count_ALL      | How many control samples have the SV                              |
+| Allele_Freq_ALL       | Frequency (%) of control samples alleles with SV                          |
+| GT_homWT              | Number of control samples that are homozygous for the reference allele at the locus  |
+| GT_het                | Number of control that are heterozygous for the SV allele at the locus |
+| GT_homVAR             | Number of control samples that are homozygous for the SV allele at the locus  |
+| HWE                   | Is the SV in Hardy-Weinberg equilibrium in the 1KGP samples                |
+
+### Annotation columns
+| Column Name           | Column Description                                                                 |
+|:-----------------------|:-----------------------------------------------------------------------------------|
 | Genes                 | Genes that the SV intersects with (gencode v45, 5kbp slop)        |
-| OMIM                  | OMIM phenotypes associated with any gene the SV intersects (OMIM 12/2025)           |
-| GenCC                  | GenCC phenotypes associated with any gene the SV intersects           |
+| OMIM                  | OMIM phenotypes associated with any gene the SV intersects (OMIM 01/2026)           |
+| OMIM_MOI               | Mode of inheritance associated with phenotypes and genes the SV overlaps (OMIM 01/2026)           |
+| GenCC                  | GenCC phenotypes associated with any gene the SV intersects (GenCC 20250510)      |
+| GenCC_Support          | Support level(s) for GenCC phenotypes for overlapping genes (GenCC 20250510)  |
+| GenCC_MOI               | Mode of inheritance for GenCC phenotypes for overlapping genes (GenCC 20250510) |
 | HPO                  | HPO phenotypes associated with any gene the SV intersects           |
 | pLI                  | pLI score for each gene the SV intersects           |
 | UTR                | If the SV intersects with a UTR (gencode v45)         |
@@ -420,6 +290,10 @@ Below are the output columns. Some are specific to the needLR function used. "Qu
 | Gap                   | If the SV intersects with an hg38 gap region (UCSC hg38 mapping and sequencing: gap) |
 | Homopolymer                   | If the SV intersects with an homopolymer >50bp |
 | HiConf                | If the SV is fully contained within a high confidence region (Genome in a Bottle T2TQ100-V1.0_stvar) |
+
+### Columns output when using 1KGP dataset as a control reference
+| Column Name           | Column Description                                                                 |
+|:-----------------------|:-----------------------------------------------------------------------------------|
 | Pop_Count_AFR         | How many 1KGP AFR ancestry samples have the SV                             |
 | Pop_Freq_AFR          | Frequency (%) of 1KGP AFR ancestry samples with SV                          |
 | Pop_Count_AMR         | How many 1KGP AMR ancestry samples have the SV                              |
@@ -430,8 +304,6 @@ Below are the output columns. Some are specific to the needLR function used. "Qu
 | Pop_Freq_EUR          | Frequency (%) of 1KGP EUR ancestry samples with SV                          |
 | Pop_Count_SAS         | How many 1KGP SAS ancestry samples have the SV                              |
 | Pop_Freq_SAS          | Frequency (%) of 1KGP SAS ancestry samples with SV                          |
-| Pop_Count_ALL         | How many control samples have the SV                             |
-| Pop_Freq_ALL          | Frequency (%) of control samples with SV                         |
 | Allele_Count_AFR      | How many 1KGP AFR ancestry alleles have the SV                             |
 | Allele_Freq_AFR       | Frequency (%) of 1KGP AFR ancestry alleles with SV                      |
 | Allele_Count_AMR      | How many 1KGP AMR ancestry alleles have the SV                            |
@@ -442,23 +314,37 @@ Below are the output columns. Some are specific to the needLR function used. "Qu
 | Allele_Freq_EUR       | Frequency (%) of 1KGP EUR ancestry alleles with SV                          |
 | Allele_Count_SAS      | How many 1KGP SAS ancestry alleles have the SV                               |
 | Allele_Freq_SAS       | Frequency (%) of 1KGP SAS ancestry alleles with SV                          |
-| Allele_Count_ALL      | How many control samples have the SV                              |
-| Allele_Freq_ALL       | Frequency (%) of control samples alleles with SV                          |
-| GT_homWT              | Number of control samples that are homozygous for the reference allele at the locus  |
-| GT_het                | Number of control that are heterozygous for the SV allele at the locus |
-| GT_homVAR             | Number of control samples that are homozygous for the SV allele at the locus  |
-| HWE                   | Is the SV in Hardy-Weinberg equilibrium in the 1KGP samples                |
 
+### Columns output when using a proband or single vcf
+| Column Name           | Column Description                                                                 |
+|:-----------------------|:-----------------------------------------------------------------------------------|
+| Genotype              | Query SV genotype                                                                  |
+| Alt_reads             | Number of reads in the query sample supporting the SV                              |
+| Ref_reads             | Number of reference reads in the query sample at the SV locus                      |
+| Total_reads           | Total number of reads at the SV locus (in the query sample)                        |
 
-## EXAMPLE
+### Columns output when using a query cohort vcf
+| Column Name           | Column Description                                                                 |
+|:-----------------------|:-----------------------------------------------------------------------------------|
+| Cohort_support        | Sample ID of the samples in the input query cohort with the SV |
+| Cohort_Pop_Count  | How many query cohort samples have the SV |
+| Cohort_Pop_Freq | Frequency (%) of query cohort samples with SV |
+| Cohort_Allele_Count    | How many query cohort alleles have the SV |
+| Cohort_Allele_Freq    | Frequency (%) of query cohort alleles with SV |
 
-In the downloaded zip file there is a directory `EXAMPLE/` which contains an example query vcf, input list, and results.  
-If eveything is set up correctly, you should be able to run the following command from inside the `/needLR_v3.5_local` directory
-```
-./needLR_v3.5_basic.sh -g /file/path/to/reference/genome.fa -l EXAMPLE/input_list.txt
-```
-and find the output here: `needLR_v3.5_local/needLR_output/EXAMPLE_needLR_v3.5_basic`  
-The results should match the example output in `EXAMPLE/EXAMPLE_needLR_v3.5_basic_RESULTS.txt`
+### Columns output when using comparator
+| Column Name           | Column Description                                                                 |
+|:-----------------------|:-----------------------------------------------------------------------------------|
+| Maternal_genotype  |   Genotype of SV in first parental VCF  (Parental_genotype when one VCF supplied) |
+| Maternal_Alt_Reads  |   Count of reads supporting SV in first parental VCF  (Parental_genotype when one VCF supplied) |
+| Maternal_Ref_Reads  |   Count of reads supporting reference in first parental VCF  (Parental_genotype when one VCF supplied) |
+| Maternal_Total_Reads  |   Total count of reads at SV locus in first parental VCF  (Parental_genotype when one VCF supplied) |
+| Paternal_genotype  |   Genotype of SV in second parental VCF  (not included when one VCF supplied) |
+| Maternal_Alt_Reads  |   Count of reads supporting SV  in second parental VCF  (Parental_genotype when one VCF supplied) |
+| Maternal_Ref_Reads  |   Count of reads supporting reference in second parental VCF  (Parental_genotype when one VCF supplied) |
+| Maternal_Total_Reads  |   Total count of reads at SV locus in second parental VCF  (Parental_genotype when one VCF supplied) |
+| Inheritance   |   Predicted inheritence pattern |
+
 
 ## NOTES ON TRUVARI PARAMETERS
 

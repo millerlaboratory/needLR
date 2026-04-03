@@ -42,6 +42,9 @@ BEGIN{
     allele_all=subpop_allele_end+1
     if(nsubpops<2){
         pop_all=control_end+1
+        if(ncohort>1){
+            pop_all=gt_coh_homvar+1
+        }
         allele_all=pop_all+1
     }
 

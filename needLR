@@ -5,12 +5,13 @@ set -euo pipefail
 
 ### testing block for paths
 version=4.0
-OUTPUTDIR="$(pwd)/needLR_output_test"
+OUTPUTDIR="$(pwd)/needLR_output_manuscript_examples"
 temp=tempNeedlr/temp
 #temp=$(mktemp -u -t needlr.temp.XXXXX)
-refloc=backend_files
+
 thisscript=$(realpath "$0")
 scriptpath=${thisscript%/*}
+refloc=$scriptpath/backend_files
 FILTERPASS=0 #this setting is to include non-passing variants or not. default is to filter nothing.
 run1kg=1 #this setting determines whether or not to run 1kg specific annotation scripts or use a custom control set
 THREADS=30
@@ -64,24 +65,15 @@ NSUBGROUPS=1
 
 declare -A ANNOTATIONINFO
 
-ANNOTATIONINFO[omim]='##INFO=<ID=OMIM,Number=.,Type=String,Description="OMIM phenotypes associated with any gene the SV overlaps (OMIM 20260129)">|\
-##INFO=<ID=OMIM_MOI,Number=.,Type=String,Description="Mode of inheritance associated with phenotypes and genes the SV overlaps (OMIM 20260129)">'
-ANNOTATIONINFO[gencc]='##INFO=<ID=GenCC,Number=.,Type=String,Description="GenCC phenotypes for overlapping genes (GenCC 20250510)">|\
-##INFO=<ID=GenCC_Support,Number=.,Type=String,Description="Support level(s) for GenCC phenotypes for overlapping genes (GenCC 20250510)">|\
-##INFO=<ID=GenCC_MOI,Number=.,Type=String,Description="Mode of inheritance for GenCC phenotypes for overlapping genes (GenCC 20250510)">'
+ANNOTATIONINFO[omim]='##INFO=<ID=OMIM,Number=.,Type=String,Description="OMIM phenotypes associated with any gene the SV overlaps (OMIM 20260129)">|##INFO=<ID=OMIM_MOI,Number=.,Type=String,Description="Mode of inheritance associated with phenotypes and genes the SV overlaps (OMIM 20260129)">'
+ANNOTATIONINFO[gencc]='##INFO=<ID=GenCC,Number=.,Type=String,Description="GenCC phenotypes for overlapping genes (GenCC 20250510)">|##INFO=<ID=GenCC_Support,Number=.,Type=String,Description="Support level(s) for GenCC phenotypes for overlapping genes (GenCC 20250510)">|##INFO=<ID=GenCC_MOI,Number=.,Type=String,Description="Mode of inheritance for GenCC phenotypes for overlapping genes (GenCC 20250510)">'
 ANNOTATIONINFO[hpo]='##INFO=<ID=HPO,Number=.,Type=String,Description="HPO terms for overlapping genes (OMIM 20260129)">'
 ANNOTATIONINFO[pli]='##INFO=<ID=pLI,Number=.,Type=String,Description="pLI scores from gnomAD v4.1">'
 ANNOTATIONINFO[utr]='##INFO=<ID=UTR,Number=1,Type=String,Description="SV overlaps a UTR (gencode v45)">'
 ANNOTATIONINFO[cds]='##INFO=<ID=CDS,Number=1,Type=String,Description="SV overlaps a coding exon (gencode v45)">'
 ANNOTATIONINFO[oreganno]='##INFO=<ID=ORegAnno,Number=1,Type=String,Description="SV overlaps a regulatory element (ORegAnno)">'
 ANNOTATIONINFO[tre]='##INFO=<ID=Vamos,Number=1,Type=String,Description="SV overlaps a tandem repeat region (VAMOS, n=148)">'
-ANNOTATIONINFO[mapflags]='##INFO=<ID=Centromeric,Number=1,Type=String,Description="SV overlaps a centromeric region (UCSC hg38)">|\
-##INFO=<ID=Pericentromeric,Number=1,Type=String,Description="SV overlaps a pericentromeric region (+/-5Mb)">|\
-##INFO=<ID=Telomeric,Number=1,Type=String,Description="SV overlaps a telomeric region (5Mb from chromosome end)">|\
-##INFO=<ID=Segdup,Number=1,Type=String,Description="SV overlaps a segmental duplication (GIAB v3.3)">|\
-##INFO=<ID=Repeat,Number=1,Type=String,Description="SV overlaps a repeat region (UCSC RepeatMasker)">|\
-##INFO=<ID=Gap,Number=1,Type=String,Description="SV overlaps an hg38 assembly gap (UCSC)">|\
-##INFO=<ID=Homopolymer,Number=1,Type=String,Description="SV overlaps a homopolymeric region >=50bp">'
+ANNOTATIONINFO[mapflags]='##INFO=<ID=Centromeric,Number=1,Type=String,Description="SV overlaps a centromeric region (UCSC hg38)">|##INFO=<ID=Pericentromeric,Number=1,Type=String,Description="SV overlaps a pericentromeric region (+/-5Mb)">|##INFO=<ID=Telomeric,Number=1,Type=String,Description="SV overlaps a telomeric region (5Mb from chromosome end)">|##INFO=<ID=Segdup,Number=1,Type=String,Description="SV overlaps a segmental duplication (GIAB v3.3)">|##INFO=<ID=Repeat,Number=1,Type=String,Description="SV overlaps a repeat region (UCSC RepeatMasker)">|##INFO=<ID=Gap,Number=1,Type=String,Description="SV overlaps an hg38 assembly gap (UCSC)">|##INFO=<ID=Homopolymer,Number=1,Type=String,Description="SV overlaps a homopolymeric region >=50bp">'
 ANNOTATIONINFO[hiconf]='##INFO=<ID=HiConf,Number=1,Type=String,Description="SV fully contained in a high-confidence region (GIAB T2TQ100-V1.0)">'
 
 declare -A ANNOTATIONHEADER
@@ -286,7 +278,7 @@ subcommand=$1
 case ${subcommand} in
     annotate|bed|comparator) ;;
     help|?) help
-            exit 1 ;;
+            exit 0 ;;
     *) echo -e "\nCommand $subcommand not recognized"
         help
         exit 1 ;;
@@ -310,7 +302,7 @@ do
                 *) echo "option $longoption not recognized, ignoring" ;;
             esac ;;
         H) help
-           exit 1 ;;
+           exit 0 ;;
         P) PARENTALVCFS="${OPTARG}" ;;
         C) TRUVARI_MERGED_CTRL_SET="${OPTARG}" ;;
         L) QUERY_VCFS="${OPTARG}" ;;
@@ -349,7 +341,7 @@ numInputs="${#INPUTS[@]}"
 echo ""
 if [[ $numInputs -gt 0 ]]
 then
-    echo "found ${numInputs} positional arguments, ignoring input from -q and -l"
+    echo "found ${numInputs} positional arguments, ignoring input from -Q and -L"
 
     filetypes=()
 
@@ -369,7 +361,7 @@ elif [[ -z "${QUERY_VCFS+x}" ]]
 then
     if [[ -z "${COHORT_VCF+x}" ]]
     then
-        echo "${bold}Error: ${normal}no input from -q, -l, or positional parameters found"
+        echo "${bold}Error: ${normal}no input from -Q, -L, or positional parameters found"
         echo ""
         ${subcommand}Help
         exit 1
@@ -882,11 +874,13 @@ inheritanceSupVec() {
                 print "not_present"}
             else if($0~/Maternal/){\
                 print "maternal"}
-            else {print "paternal"}}}' > $output.inheritances.txt
+            else if($0~/Paternal/){\
+                print "paternal"}
+            else {print "inherited"}}}' > $output.inheritances.txt
     else
-        cut -f8 $input | awk -F ':' '{if(NF==1 && $0=="Proband"){print "not_inherited"};\
-        if(NF==2){print "inherited"};
-        if($0!~/Proband/){print "not_present"}}' > $output.inheritances.txt
+        cut -f8 $input | awk -F '_' '{if($0!~/Proband/){print "not_present"}\
+        else if(NF==1 && $0=="Proband"){print "not_inherited"}\
+        else if(NF==2){print "inherited"}}' > $output.inheritances.txt
     fi
 
     paste <(cut -f1-7 ${input}) $output.inheritances.txt <(cut -f9- ${input})  > ${output}_inheritance.txt 
@@ -898,8 +892,6 @@ cohortControlOverlap() {
 
     # get number of samples and sample names from the input
     COHORT_SAMPLE_NAME_LIST=( $(bcftools view -h ${query} | grep -v ^## | cut -f10-) )
-    echo ${COHORT_SAMPLE_NAME_LIST[@]} | tr ' ' '\n' > $temp.cohort_SAMPLE_order.txt # this should be redundant
-    COHORT_SAMPLE_NAMES=$temp.cohort_SAMPLE_order.txt
     COHORT_SAMPLES=${#COHORT_SAMPLE_NAME_LIST[@]}
 
     truvari_merge "${query}" "${output}"
@@ -959,6 +951,7 @@ annotateGenes() {
     NF=$(head -n1 $input | awk '{print NF}')
     let geneFieldInitial=$NF+4
     let geneField=$NF+1
+
 
     echo -e "\nAnnotating gene overlap\n"
 
@@ -1372,7 +1365,7 @@ printTable() {
     local finalOutput=$3
     local nquery=$4
 
-    echo "Printing tabular results to ${finalOutput}_RESULTS.txt"
+    echo "Printing tabular results to ${finalOutput}_RESULTS.tsv"
 
     # make different headers depending on input options
     tableheader=( CHROM POS End_Pos REF ALT SVLEN SVTYPE )
@@ -1439,7 +1432,7 @@ printTable() {
     let SUBGROUPCOLUMNS=${NSUBGROUPS}*4
     let annotationstop=$NF-6-$SUBGROUPCOLUMNS
     
-    echo "${tableheader[@]}" | tr ' ' '\t' > ${finalOutput}_RESULTS.txt
+    echo "${tableheader[@]}" | tr ' ' '\t' > ${finalOutput}_RESULTS.tsv
         
     cat ${output}_results_long.txt | \
         awk -F '\t' -v annostart=${annotationstart} -v annostop=${annotationstop} \
@@ -1448,51 +1441,65 @@ printTable() {
             if(length($alt) > 30000){$alt="[too_long_see_vcf]"};
             for(i=annostart;i<=annostop;i++){
                 if(length($i) > 30000){$i="[too_long_see_vcf]"}};
-            print $0}' >> ${finalOutput}_RESULTS.txt
+            print $0}' >> ${finalOutput}_RESULTS.tsv
     
     #This removes "?s" from OMIM annotations (hard to sort)
-    sed -i 's/?//g' ${finalOutput}_RESULTS.txt
+    sed -i 's/?//g' ${finalOutput}_RESULTS.tsv
     #This removes empty lines from the bottom of the txt file
-    sed -i -e :a -e '/^[[:space:]]*$/{$d;N;ba}' ${finalOutput}_RESULTS.txt
+    sed -i -e :a -e '/^[[:space:]]*$/{$d;N;ba}' ${finalOutput}_RESULTS.tsv
 }
 
 filterTable() {
     local input=$1
     local output=$2
 
-    if [ ! -z ${COHORT_VCF+x} ] #if running with a cohort, account for different # cols
+    if [ -z ${COHORT_VCF+x} ] #if running with a cohort, account for different # cols
     then
-        afcol=14
-    else
         afcol=13
+    else
+        afcol=17
     fi
 
     ##Filtered output 1: SVs absent from 1KGP entirely (afcol = Allele_Freq_ALL_1KGP)
     awk -F'\t' -v afcol=$afcol 'BEGIN{OFS="\t"} NR==1 || $afcol==0 {print}' \
-     $input > "${output}_RESULTS_unique.txt"
+     $input > "${output}_RESULTS_unique.tsv"
 
     ##Filtered output 2: SVs with 1KGP allele freq <=0.01
     awk -F'\t' -v afcol=$afcol 'BEGIN{OFS="\t"} NR==1 || $afcol<=0.01 {print}' \
-     $input > "${output}_RESULTS_0.01.txt"
+     $input > "${output}_RESULTS_0.01.tsv"
 }
 
 filterInheritance() {
     local input=$1
     local output=$2
+    local runtype=$3
 
-    afcol=14
+    if [[ $runtype == "TRIO" ]]
+    then    
+        afcol=22
+        incol=8
+
+        ##Filtered output 3: de novo SVs
+        awk -F'\t' -v inheritance=$incol 'BEGIN{OFS="\t"} NR==1 || $inheritance=="de_novo" {print}' \
+        $input > "${output}_RESULTS_denovo.tsv"
+
+    else
+        afcol=18
+        incol=8
+
+        awk -F'\t' -v inheritance=$incol 'BEGIN{OFS="\t"} NR==1 || $inheritance=="not_inherited" {print}' \
+        $input > "${output}_RESULTS_not_inherited.tsv"
+    fi
 
     ##Filtered output 1: SVs absent from 1KGP entirely (afcol = Allele_Freq_ALL_1KGP)
     awk -F'\t' -v afcol=$afcol 'BEGIN{OFS="\t"} NR==1 || $afcol==0 {print}' \
-     $input > "${output}_RESULTS_unique.txt"
+     $input > "${output}_RESULTS_unique.tsv"
 
     ##Filtered output 2: SVs with 1KGP allele freq <=0.01
     awk -F'\t' -v afcol=$afcol 'BEGIN{OFS="\t"} NR==1 || $afcol<=0.01 {print}' \
-     $input > "${output}_RESULTS_0.01.txt"
+     $input > "${output}_RESULTS_0.01.tsv"
 
-     ##Filtered output 3: de novo SVs
-    awk -F'\t' -v afcol=$afcol 'BEGIN{OFS="\t"} NR==1 || $afcol<=0.01 {print}' \
-     $input > "${output}_RESULTS_0.01.txt"
+     
 }
 
 clipRegion() {
@@ -1601,13 +1608,16 @@ annotateRun() {
         positionIndexedAnnotations ${output}_filled.txt ${output}
 
         printTable ${output}_posannotations.txt ${output} ${finalOutput} "$n" $keepcol
-        printVCF $analysisquery ${finalOutput}_RESULTS.txt ${output} ${finalOutput} "$n" $keepcol
+        printVCF $analysisquery ${finalOutput}_RESULTS.tsv ${output} ${finalOutput} "$n" $keepcol
 
-        filterTable ${finalOutput}_RESULTS.txt ${finalOutput}
+        filterTable ${finalOutput}_RESULTS.tsv ${finalOutput}
 
         echo "Completed NeedLR annotation of ${query}"
-        #echo "Cleaning up"
-        #rm ${output}*
+        echo "Cleaning up"
+        rm ${output}*
+
+        echo -e """\nFiles saved to: \n$(ls $finalOutput*)
+        """
     done
 }
 
@@ -1633,6 +1643,7 @@ comparatorRun() {
     then
         ctype=TRIO
     fi
+    echo ${PARENTALVCFLIST[@]}
     validatedParentalVcfs=()
     for vcf in ${PARENTALVCFLIST[@]}
     do
@@ -1642,6 +1653,12 @@ comparatorRun() {
     echo """        Parental VCFs :   ${validatedParentalVcfs[@]}"""
     echo """        Comparator Run :  $ctype"""
     echo ""
+
+    if [[ ${ANALYSISREGION} != "All" ]]
+    then
+        clipRegion ${CTRL_MERGED} $temp.clippedControl.vcf.gz
+        CTRL_MERGED=$temp.clippedControl.vcf.gz
+    fi
 
     query=${INPUT_VCFS[0]} # query is proband input
     echo "Beginning $ctype NeedLR annotation of $query"
@@ -1676,19 +1693,19 @@ comparatorRun() {
     tabix -p vcf ${output}_proband.vcf.gz
 
     #if this is a duo we want to keep two genotypes
-    if [[ $ctype=="TRIO" ]]
+    if [[ $ctype == "TRIO" ]]
     then
         COHORT_SAMPLE_NAME_LIST=(Proband Maternal Paternal )
-        bcftools reheader -n Maternal -o ${output}_maternal.vcf.gz ${validatedParentalVcfs[0]}
+        bcftools reheader -n Maternal -o ${output}_maternal.vcf.gz ${analysisParentalVcfs[0]}
         tabix -p vcf ${output}_maternal.vcf.gz
-        bcftools reheader -n Paternal -o ${output}_paternal.vcf.gz ${validatedParentalVcfs[1]}
+        bcftools reheader -n Paternal -o ${output}_paternal.vcf.gz ${analysisParentalVcfs[1]}
         tabix -p vcf ${output}_paternal.vcf.gz
 
         parentString=${output}_maternal.vcf.gz,${output}_paternal.vcf.gz
         n=3
     else
         COHORT_SAMPLE_NAME_LIST=(Proband Parental )
-        bcftools reheader -n Parental -o ${output}_parental.vcf.gz ${validatedParentalVcfs}
+        bcftools reheader -n Parental -o ${output}_parental.vcf.gz ${analysisParentalVcfs[0]}
         tabix -p vcf ${output}_parental.vcf.gz
 
         parentString=${output}_parental.vcf.gz
@@ -1716,15 +1733,18 @@ comparatorRun() {
         | grep -v "not_present" > ${output}_fullwidth.txt
 
     printTable ${output}_fullwidth.txt ${output} ${finalOutput} $n
-    printVCF $analysisquery ${finalOutput}_RESULTS.txt ${output} ${finalOutput} $n
+    printVCF $analysisquery ${finalOutput}_RESULTS.tsv ${output} ${finalOutput} $n
 
     
 
-    filterTable ${finalOutput}_RESULTS.txt ${finalOutput}
+    filterInheritance ${finalOutput}_RESULTS.tsv ${finalOutput} $ctype
 
     echo "Completed NeedLR annotation of ${query}"
-    #echo "Cleaning up"
-    #rm ${output}*
+    echo "Cleaning up"
+    rm ${output}*
+
+    echo -e """\nFiles saved to: \n$(ls $finalOutput*)
+    """
 }
 
 bedRun() {
@@ -1794,8 +1814,11 @@ bedRun() {
         echo ${header[@]} | tr ' ' '\t' > ${finalOutput}.bed
 
         cat ${output}_posannotations.txt >> ${finalOutput}.bed
-        #echo "Cleaning up"
-        #rm ${output}*
+        echo "Cleaning up"
+        rm ${output}*
+
+        echo -e """\nFiles saved to: \n$(ls $finalOutput*)
+        """
         
     done
 }
@@ -1814,4 +1837,4 @@ case "${subcommand}" in
         exit 1
 esac
 
-#rm $temp*
+rm $temp*

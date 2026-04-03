@@ -34,7 +34,6 @@ then
     exit 1
 elif [[ -z ${headerline+x} ]]
 then
-    >&2 echo "no header line provided, using line of input for breaks and omitting header from output"
     headerline=$( head -n1 $annotation | cut -d ',' -f2- | cut -d ',' -f $infocols )
     printheader=0
 elif [[ -z ${OUTPUT+x } ]]

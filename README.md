@@ -68,7 +68,7 @@ This version of needLR incorporates SV calls made by Sniffles_v2.6.2 for 500 1KG
 
 needLR_v4.0 has three subcommands:
 * [annotate](#subcommand-annotate): Compares one or more query vcfs to a pre-merged, multisample vcf of 500 1KGP samples and annotates the SVs in the query individual. A custom control set may optionally be provided. If a multisample vcf is provided, SVs that are present in one more affected individuals in the cohort are annotated;.
-* [comparator](#subcommand:-comparator): Compares a single query sample and one or two parental samples to a pre-merged, multisample vcf of 500 1KGP samples and annotates the SVs in the query individual. This function uniquely annotates the SVs from the query vcf as being "inherited", "maternal", "paternal", "de_novo", or "uncertain" based on SVs from the parental vcf(s).
+* [comparator](#subcommand:-comparator): Compares a single query sample and one or two parental samples to a pre-merged, multisample vcf of 500 1KGP samples and annotates the SVs in the query individual. This function uniquely annotates the SVs from the query vcf as being "inherited", "maternal", "paternal", "de_novo", or "not_inherited" based on SVs from the parental vcf(s).
 * [bed](#subcommand:-bed): Annotates any sorted bed file with needLR annotations
 
 [Follow these steps to make a custom cohort for use either as a query or a control.](https://github.com/jgust1/needLR/blob/main/docs/custom_cohort.md)
@@ -104,7 +104,7 @@ tar -xvzf needLR_v4.0_backend_files.tar.gz
 >[!NOTE] 
 >Options and commands have been updated since needLR v3.5
 
-`needLR {subcommand} <options> {input.vcf.gz}`
+`needLR {subcommand} <options> {input.vcf.gz} {input.2.vcf.gz} {more.input.vcf.gz}...`
 
   Global options:
   ``` -B                     : [ path to folder containing backend files for non-conda custom installation ]
@@ -115,7 +115,7 @@ tar -xvzf needLR_v4.0_backend_files.tar.gz
 
 ### Subcommand: annotate
 
-`annotate` requires VCF input, either as a single positional argument, with option `-Q` to provide a multisample VCF, or with flag `-L` to provide a list of input files. 
+`annotate` requires VCF input, either as positional arguments, with option `-Q` to provide a multisample VCF, or with flag `-L` to provide a list of input files. 
 
 Additional options:
 
@@ -153,15 +153,33 @@ Compare a single query VCF to the 500 1KGP database and apply all available anno
 needLR annotate examples/inputs/single_genome_example_chr22.vcf.gz
 ```
 
+>[!NOTE]
+> This example willl run much more quickly (and equivalently) if option `-R chr22` is included, since the input\
+VCF is limited to SVs on chr22.
+
+Output for this example: `examples/outputs/single_genome_example_chr22_needLR_1kg_v4.0/`
+
+
+
 Compare a list of query VCFs to a different merged VCF and annotate with only OMIM and hiconfidence regions
 ```
 needLR annotate -L examples/inputs/list_of_samples.txt -C examples/inputs/merged_cohort_chr22.vcf.gz --omim --hiconf
+```
+
+Outputs for this example:
+```
+examples/outputs/single_genome_example_chr22_needLR_customControl_v4.0/
+examples/outputs/HG005_Pb_hantrio_sniffles_chr22_needLR_customControl_v4.0/
 ```
 
 Compare the SVs in a merged cohort VCF to the 500 1KGP database and limit analysis to a smaller region
 ```
 needLR annotate -Q examples/inputs/merged_cohort_chr22.vcf.gz -R chr22:10731900-11588324
 ```
+
+Output for this example `examples/outputs/merged_cohort_chr22_needLR_1kg_v4.0/`
+
+
 
 ### Subcommand: comparator
 
@@ -186,13 +204,20 @@ Compare a proband VCF to two parental VCFs along with the 500 1KGP database and 
 needLR comparator -P examples/inputs/trio/HG007_Mo_hantrio_sniffles_chr22.vcf.gz,examples/inputs/trio/HG006_Fa_hantrio_sniffles.chr22.vcf.gz examples/inputs/trio/HG005_Pb_hantrio_sniffles_chr22.vcf.gz
 ```
 
+Output for this example `examples/outputs/HG005_Pb_hantrio_sniffles_chr22_needLR_TRIO_1kg_v4.0/`
+
+
 Compare a proband VCF to a single parent VCF along with a custom control VCF and apply only gencc annotations
 ```
-needLR comparator -P examples/inputs/trio/HG007_Mo_hantrio_sniffles_chr22.vcf.gz -C examples/merged_cohort_chr22.vcf.gz --gencc examples/inputs/trio/HG005_Pb_hantrio_sniffles_chr22.vcf.gz
+needLR comparator -P examples/inputs/trio/HG007_Mo_hantrio_sniffles_chr22.vcf.gz -C examples/inputs/merged_cohort_chr22.vcf.gz --gencc examples/inputs/trio/HG005_Pb_hantrio_sniffles_chr22.vcf.gz
 ```
 
+Output for this example `examples/outputs/HG005_Pb_hantrio_sniffles_chr22_needLR_DUO_customControl_v4.0/`
+
+
+
 >[!NOTE]
->needLR_duo is imperfect in predicting inherited vs. _de novo_ SVs. The annotation is fully dependent on how well the SVs were merged. We recommend using needLR as a starting point and then manually inspecting inheritance in IGV. Observe extra precaution in VNTR regions.
+>`needLR comparator` is imperfect in predicting inherited vs. _de novo_ SVs. The annotation is fully dependent on how well the SVs were merged. We recommend using needLR as a starting point and then manually inspecting inheritance in IGV. Observe extra precaution in VNTR regions.
 
 ### Subcommand: bed
 
@@ -215,6 +240,7 @@ Annotate kinnex data, limit to chr22, apply all available annotations
 ```
 needLR bed -R chr22 inputs/examples/kinnex_example_chr22.bed
 ```
+Output for this example `examples/outputs/kinnex_example_chr22_needLR_bed_v4.0/`
 
 
 ## OUTPUT
@@ -225,15 +251,16 @@ Output:
 
 | Output | Description |
 |:------------|:-------------|
-|{SAMPLE_ID}_RESULTS.txt| Annotated query or cohort SVs (the main output)|
-|{SAMPLE_ID}_RESULTS_unique.txt| Annotated SVs that are unique to the query sample or cohort (not seen in the control cohort) |
-|{SAMPLE_ID}_RESULTS_0.01.txt| Annotated SVs with an AF <=0.01  (in relation to the control cohort)|
+|{SAMPLE_ID}_RESULTS.tsv| Annotated query or cohort SVs (the main output)|
+|{SAMPLE_ID}_RESULTS_unique.tsv| Annotated SVs that are unique to the query sample or cohort (not seen in the control cohort) |
+|{SAMPLE_ID}_RESULTS_0.01.tsv| Annotated SVs with an AF <=0.01  (in relation to the control cohort)|
 |{SAMPLE_ID}_RESULTS.vcf.gz| Annotated query SVs in vcf format |
-|{SAMPLE_ID}_RESULTS_denovo.txt| Annotated SVs that are unique to the proband (`comparator` only) |
+|{SAMPLE_ID}_RESULTS_denovo.tsv| Annotated SVs that are unique to the proband (`comparator` trios only) |
+|{SAMPLE_ID}_RESULTS_not_inherited.tsv| Annotated SVs that are not present in the comparator (`comparator` duos only) |
 
 
 >[!NOTE]
->needLR generates many temporary files when running, this can add up to ~20Gb
+>needLR generates many temporary files when running, this can add up to ~20Gb for ONT WGS datasetsless 
 
 ## ANALYZING OUTPUT
 

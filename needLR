@@ -63,30 +63,95 @@ GENOME_FILE="$refloc/bed_files/hg38.chrom.sizes.txt"
 ALLANNOTATIONLIST=( omim gencc hpo pli utr cds oreganno tre mapflags hiconf )
 NSUBGROUPS=1
 
-declare -A ANNOTATIONINFO
+declare -A INFOCOLTEXT
 
-ANNOTATIONINFO[omim]='##INFO=<ID=OMIM,Number=.,Type=String,Description="OMIM phenotypes associated with any gene the SV overlaps (OMIM 20260129)">|##INFO=<ID=OMIM_MOI,Number=.,Type=String,Description="Mode of inheritance associated with phenotypes and genes the SV overlaps (OMIM 20260129)">'
-ANNOTATIONINFO[gencc]='##INFO=<ID=GenCC,Number=.,Type=String,Description="GenCC phenotypes for overlapping genes (GenCC 20250510)">|##INFO=<ID=GenCC_Support,Number=.,Type=String,Description="Support level(s) for GenCC phenotypes for overlapping genes (GenCC 20250510)">|##INFO=<ID=GenCC_MOI,Number=.,Type=String,Description="Mode of inheritance for GenCC phenotypes for overlapping genes (GenCC 20250510)">'
-ANNOTATIONINFO[hpo]='##INFO=<ID=HPO,Number=.,Type=String,Description="HPO terms for overlapping genes (OMIM 20260129)">'
-ANNOTATIONINFO[pli]='##INFO=<ID=pLI,Number=.,Type=String,Description="pLI scores from gnomAD v4.1">'
-ANNOTATIONINFO[utr]='##INFO=<ID=UTR,Number=1,Type=String,Description="SV overlaps a UTR (gencode v45)">'
-ANNOTATIONINFO[cds]='##INFO=<ID=CDS,Number=1,Type=String,Description="SV overlaps a coding exon (gencode v45)">'
-ANNOTATIONINFO[oreganno]='##INFO=<ID=ORegAnno,Number=1,Type=String,Description="SV overlaps a regulatory element (ORegAnno)">'
-ANNOTATIONINFO[tre]='##INFO=<ID=Vamos,Number=1,Type=String,Description="SV overlaps a tandem repeat region (VAMOS, n=148)">'
-ANNOTATIONINFO[mapflags]='##INFO=<ID=Centromeric,Number=1,Type=String,Description="SV overlaps a centromeric region (UCSC hg38)">|##INFO=<ID=Pericentromeric,Number=1,Type=String,Description="SV overlaps a pericentromeric region (+/-5Mb)">|##INFO=<ID=Telomeric,Number=1,Type=String,Description="SV overlaps a telomeric region (5Mb from chromosome end)">|##INFO=<ID=Segdup,Number=1,Type=String,Description="SV overlaps a segmental duplication (GIAB v3.3)">|##INFO=<ID=Repeat,Number=1,Type=String,Description="SV overlaps a repeat region (UCSC RepeatMasker)">|##INFO=<ID=Gap,Number=1,Type=String,Description="SV overlaps an hg38 assembly gap (UCSC)">|##INFO=<ID=Homopolymer,Number=1,Type=String,Description="SV overlaps a homopolymeric region >=50bp">'
-ANNOTATIONINFO[hiconf]='##INFO=<ID=HiConf,Number=1,Type=String,Description="SV fully contained in a high-confidence region (GIAB T2TQ100-V1.0)">'
+INFOCOLTEXT[End_Pos]='##INFO=<ID=End_Pos,Number=1,Type=Integer,Description="End position of the SV">'
+INFOCOLTEXT[SVLEN]='##INFO=<ID=SVLEN,Number=1,Type=Integer,Description="SV length">'
+INFOCOLTEXT[SVTYPE]='##INFO=<ID=SVTYPE,Number=1,Type=String,Description="SV type">'
+INFOCOLTEXT[Query_ID]='##INFO=<ID=Query_ID,Number=1,Type=String,Description="Query sample ID">'
+INFOCOLTEXT[Control_support]='##INFO=<ID=Control_support,Number=.,Type=String,Description="control samples sharing the SV">' 
+INFOCOLTEXT[Allele_Freq_ALL_Control]='##INFO=<ID=Allele_Freq_ALL_Control,Number=1,Type=Float,Description="Allele frequency of the SV in the control sample cohort">'
+INFOCOLTEXT[Genes]='##INFO=<ID=Genes,Number=.,Type=String,Description="Genes overlapped by the SV (gencode v45, +/-5kb)">'
+INFOCOLTEXT[Pop_Count_ALL]='##INFO=<ID=Pop_Count_ALL,Number=1,Type=Integer,Description="Count of samples carrying the SV (controls)">'
+INFOCOLTEXT[Pop_Freq_ALL]='##INFO=<ID=Pop_Freq_ALL,Number=1,Type=Float,Description="Proportion of control samples carrying the SV (controls)">'
+INFOCOLTEXT[Allele_Count_ALL]='##INFO=<ID=Allele_Count_ALL,Number=1,Type=Integer,Description="count of alleles carrying the SV (controls)">'
+INFOCOLTEXT[Allele_Freq_ALL]='##INFO=<ID=Allele_Freq_ALL,Number=1,Type=Float,Description="control allele frequency (controls)">'
+INFOCOLTEXT[GT_homWT]='##INFO=<ID=GT_homWT,Number=1,Type=Integer,Description="Count of homozygous genotypes matching the reference in the control dataset">'
+INFOCOLTEXT[GT_het]='##INFO=<ID=GT_het,Number=1,Type=Integer,Description="Count of heterozygous genotypes in the control dataset">'
+INFOCOLTEXT[GT_homVAR]='##INFO=<ID=GT_homVAR,Number=1,Type=Integer,Description="Count of homozygous genotypes supporting the SV in the control dataset">'
+INFOCOLTEXT[p]='##INFO=<ID=p,Number=1,Type=Float,Description="Frequency of WT allele in control population">'
+INFOCOLTEXT[q]='##INFO=<ID=q,Number=1,Type=Float,Description="Frequency of SV alt allele in control population">'
+INFOCOLTEXT[HWE]='##INFO=<ID=HWE,Number=1,Type=String,Description="HWE Equilibrium status, TRUE or FALSE">'
+##single samples and probands
+INFOCOLTEXT[Genotype]='##INFO=<ID=Genotype,Number=1,Type=String,Description="Genotype of the SV in the query sample">'
+INFOCOLTEXT[Alt_Reads]='##INFO=<ID=Alt_Reads,Number=1,Type=Integer,Description="Number of reads in the query sample supporting the SV">'
+INFOCOLTEXT[Ref_Reads]='##INFO=<ID=Ref_Reads,Number=1,Type=Integer,Description="Number of reference reads in the query sample at the SV locus">'
+INFOCOLTEXT[Total_Reads]='##INFO=<ID=Total_Reads,Number=1,Type=Integer,Description="Total number of reads in the query sample at the SV locus">'
+##duos and trios only
+INFOCOLTEXT[Inheritance]='##INFO=<ID=Inheritance,Number=1,Type=String,Description="Inheritance pattern, one of de_novo, inherited, maternal, or paternal">'
+INFOCOLTEXT[Parental_GT]='##INFO=<ID=Parental_GT,Number=1,Type=String,Description="Parental genotype">' 
+INFOCOLTEXT[Parental_Alt_Reads]='##INFO=<ID=Parental_Alt_Reads,Number=1,Type=Integer,Description="Parental supporting reads">'
+INFOCOLTEXT[Parental_Ref_Reads]='##INFO=<ID=Parental_Ref_Reads,Number=1,Type=Integer,Description="Parental reference reads">'
+INFOCOLTEXT[Parental_Total_Reads]='##INFO=<ID=Parental_Total_Reads,Number=1,Type=Integer,Description="Parental total number of reads at SV locus">'
+INFOCOLTEXT[Maternal_GT]='##INFO=<ID=Maternal_GT,Number=1,Type=String,Description="Maternal genotype">' 
+INFOCOLTEXT[Maternal_Alt_Reads]='##INFO=<ID=Maternal_Alt_Reads,Number=1,Type=Integer,Description="Maternal supporting reads">'
+INFOCOLTEXT[Maternal_Ref_Reads]='##INFO=<ID=Maternal_Ref_Reads,Number=1,Type=Integer,Description="Maternal reference reads">'
+INFOCOLTEXT[Maternal_Total_Reads]='##INFO=<ID=Maternal_Total_Reads,Number=1,Type=Integer,Description="Maternal total number of reads at SV locus">'
+INFOCOLTEXT[Paternal_GT]='##INFO=<ID=Paternal_GT,Number=1,Type=String,Description="Paternal genotype">' 
+INFOCOLTEXT[Paternal_Alt_Reads]='##INFO=<ID=Paternal_Alt_Reads,Number=1,Type=Integer,Description="Paternal supporting reads">'
+INFOCOLTEXT[Paternal_Ref_Reads]='##INFO=<ID=Paternal_Ref_Reads,Number=1,Type=Integer,Description="Paternal reference reads">'
+INFOCOLTEXT[Paternal_Total_Reads]='##INFO=<ID=Paternal_Total_Reads,Number=1,Type=Integer,Description="Paternal total number of reads at SV locus">'
+##cohorts only
+INFOCOLTEXT[Cohort_support]='##INFO=<ID=Cohort_support,Number=.,Type=String,Description="Cohort samples carrying the SV">'
+INFOCOLTEXT[Pop_Count_Cohort]='##INFO=<ID=Pop_Count_Cohort,Number=1,Type=Integer,Description="Number of cohort individuals carrying the SV">'
+INFOCOLTEXT[Pop_Freq_Cohort]='##INFO=<ID=Pop_Freq_Cohort,Number=1,Type=Float,Description="Proportion of cohort individuals carrying the SV">'
+INFOCOLTEXT[Allele_Count_Cohort]='##INFO=<ID=Allele_Count_Cohort,Number=1,Type=Integer,Description="Number of cohort alleles carrying the SV">'
+INFOCOLTEXT[Allele_Freq_Cohort]='##INFO=<ID=Allele_Freq_Cohort,Number=1,Type=Float,Description="Allele frequency of the SV in the cohort">'
+INFOCOLTEXT[GT_coh_homWT]='##INFO=<ID=GT_coh_homWT,Number=1,Type=Integer,Description="Count of homozygous genotypes matching the reference in the cohort">'
+INFOCOLTEXT[GT_coh_het]='##INFO=<ID=GT_coh_het,Number=1,Type=Integer,Description="Count of heterozygous genotypes in the cohort">'
+INFOCOLTEXT[GT_coh_homVAR]='##INFO=<ID=GT_coh_homVAR,Number=1,Type=Integer,Description="Count of homozygous genotypes supporting the SV in the cohort">'
+##1kg controls only
+INFOCOLTEXT[Pop_Count_AFR]='##INFO=<ID=Pop_Count_AFR,Number=1,Type=Integer,Description="1KGP AFR samples carrying the SV (n=163)">'
+INFOCOLTEXT[Pop_Freq_AFR]='##INFO=<ID=Pop_Freq_AFR,Number=1,Type=Float,Description="Proportion of 1KGP AFR samples carrying the SV">'
+INFOCOLTEXT[Pop_Count_AMR]='##INFO=<ID=Pop_Count_AMR,Number=1,Type=Integer,Description="1KGP AMR samples carrying the SV (n=67)">'
+INFOCOLTEXT[Pop_Freq_AMR]='##INFO=<ID=Pop_Freq_AMR,Number=1,Type=Float,Description="Proportion of 1KGP AMR samples carrying the SV">'
+INFOCOLTEXT[Pop_Count_EAS]='##INFO=<ID=Pop_Count_EAS,Number=1,Type=Integer,Description="1KGP EAS samples carrying the SV (n=95)">'
+INFOCOLTEXT[Pop_Freq_EAS]='##INFO=<ID=Pop_Freq_EAS,Number=1,Type=Float,Description="Proportion of 1KGP EAS samples carrying the SV">'
+INFOCOLTEXT[Pop_Count_EUR]='##INFO=<ID=Pop_Count_EUR,Number=1,Type=Integer,Description="1KGP EUR samples carrying the SV (n=72)">'
+INFOCOLTEXT[Pop_Freq_EUR]='##INFO=<ID=Pop_Freq_EUR,Number=1,Type=Float,Description="Proportion of 1KGP EUR samples carrying the SV">'
+INFOCOLTEXT[Pop_Count_SAS]='##INFO=<ID=Pop_Count_SAS,Number=1,Type=Integer,Description="1KGP SAS samples carrying the SV (n=103)">'
+INFOCOLTEXT[Pop_Freq_SAS]='##INFO=<ID=Pop_Freq_SAS,Number=1,Type=Float,Description="Proportion of 1KGP SAS samples carrying the SV">'
+INFOCOLTEXT[Allele_Count_AFR]='##INFO=<ID=Allele_Count_AFR,Number=1,Type=Integer,Description="1KGP AFR alleles carrying the SV">'
+INFOCOLTEXT[Allele_Freq_AFR]='##INFO=<ID=Allele_Freq_AFR,Number=1,Type=Float,Description="1KGP AFR allele frequency">'
+INFOCOLTEXT[Allele_Count_AMR]='##INFO=<ID=Allele_Count_AMR,Number=1,Type=Integer,Description="1KGP AMR alleles carrying the SV">'
+INFOCOLTEXT[Allele_Freq_AMR]='##INFO=<ID=Allele_Freq_AMR,Number=1,Type=Float,Description="1KGP AMR allele frequency">'
+INFOCOLTEXT[Allele_Count_EAS]='##INFO=<ID=Allele_Count_EAS,Number=1,Type=Integer,Description="1KGP EAS alleles carrying the SV">'
+INFOCOLTEXT[Allele_Freq_EAS]='##INFO=<ID=Allele_Freq_EAS,Number=1,Type=Float,Description="1KGP EAS allele frequency">'
+INFOCOLTEXT[Allele_Count_EUR]='##INFO=<ID=Allele_Count_EUR,Number=1,Type=Integer,Description="1KGP EUR alleles carrying the SV">'
+INFOCOLTEXT[Allele_Freq_EUR]='##INFO=<ID=Allele_Freq_EUR,Number=1,Type=Float,Description="1KGP EUR allele frequency">'
+INFOCOLTEXT[Allele_Count_SAS]='##INFO=<ID=Allele_Count_SAS,Number=1,Type=Integer,Description="1KGP SAS alleles carrying the SV">'
+INFOCOLTEXT[Allele_Freq_SAS]='##INFO=<ID=Allele_Freq_SAS,Number=1,Type=Float,Description="1KGP SAS allele frequency">'
+##annotations
+INFOCOLTEXT[OMIM_phenotype]='##INFO=<ID=OMIM_phenotype,Number=.,Type=String,Description="OMIM phenotypes associated with any gene the SV overlaps (OMIM 20260129)">'
+INFOCOLTEXT[OMIM_MOI]='##INFO=<ID=OMIM_MOI,Number=.,Type=String,Description="Mode of inheritance associated with phenotypes and genes the SV overlaps (OMIM 20260129)">'
+INFOCOLTEXT[GENCC_phenotype]='##INFO=<ID=GENCC_phenotype,Number=.,Type=String,Description="GenCC phenotypes for overlapping genes (GenCC 20250510)">'
+INFOCOLTEXT[GENCC_support]='##INFO=<ID=GENCC_support,Number=.,Type=String,Description="Support level(s) for GenCC phenotypes for overlapping genes (GenCC 20250510)">'
+INFOCOLTEXT[GENCC_MOI]='##INFO=<ID=GENCC_MOI,Number=.,Type=String,Description="Mode of inheritance for GenCC phenotypes for overlapping genes (GenCC 20250510)">'
+INFOCOLTEXT[HPO_terms]='##INFO=<ID=HPO_terms,Number=.,Type=String,Description="HPO terms for overlapping genes (OMIM 20260129)">'
+INFOCOLTEXT[pLI]='##INFO=<ID=pLI,Number=.,Type=String,Description="pLI scores from gnomAD v4.1">'
+INFOCOLTEXT[UTR]='##INFO=<ID=UTR,Number=1,Type=String,Description="SV overlaps a UTR (gencode v45)">'
+INFOCOLTEXT[CDS]='##INFO=<ID=CDS,Number=1,Type=String,Description="SV overlaps a coding exon (gencode v45)">'
+INFOCOLTEXT[ORegAnno]='##INFO=<ID=ORegAnno,Number=1,Type=String,Description="SV overlaps a regulatory element (ORegAnno)">'
+INFOCOLTEXT[TRE]='##INFO=<ID=TRE,Number=1,Type=String,Description="SV overlaps a tandem repeat region (VAMOS, n=148)">'
+INFOCOLTEXT[Centromeric]='##INFO=<ID=Centromeric,Number=1,Type=String,Description="SV overlaps a centromeric region (UCSC hg38)">'
+INFOCOLTEXT[Pericentromeric]='##INFO=<ID=Pericentromeric,Number=1,Type=String,Description="SV overlaps a pericentromeric region (+/-5Mb)">'
+INFOCOLTEXT[Telomeric]='##INFO=<ID=Telomeric,Number=1,Type=String,Description="SV overlaps a telomeric region (5Mb from chromosome end)">'
+INFOCOLTEXT[Segdup]='##INFO=<ID=Segdup,Number=1,Type=String,Description="SV overlaps a segmental duplication (GIAB v3.3)">'
+INFOCOLTEXT[Repeat]='##INFO=<ID=Repeat,Number=1,Type=String,Description="SV overlaps a repeat region (UCSC RepeatMasker)">'
+INFOCOLTEXT[Gap]='##INFO=<ID=Gap,Number=1,Type=String,Description="SV overlaps an hg38 assembly gap (UCSC)">'
+INFOCOLTEXT[Homopolymer]='##INFO=<ID=Homopolymer,Number=1,Type=String,Description="SV overlaps a homopolymeric region >=50bp">'
+INFOCOLTEXT[HiConf]='##INFO=<ID=HiConf,Number=1,Type=String,Description="SV fully contained in a high-confidence region (GIAB T2TQ100-V1.0)">'
 
-declare -A ANNOTATIONHEADER
-ANNOTATIONHEADER[omim]='OMIM|OMIM_MOI'
-ANNOTATIONHEADER[gencc]='GenCC|GenCC_Support|GenCC_MOI'
-ANNOTATIONHEADER[hpo]='HPO'
-ANNOTATIONHEADER[pli]='pLI'
-ANNOTATIONHEADER[utr]='UTR'
-ANNOTATIONHEADER[cds]='CDS'
-ANNOTATIONHEADER[oreganno]='ORegAnno'
-ANNOTATIONHEADER[tre]='Vamos'
-ANNOTATIONHEADER[mapflags]='Centromeric|Pericentromeric|Telomeric|Segdup|Repeat|Gap|Homopolymer'
-ANNOTATIONHEADER[hiconf]='HiConf'
 
 #TOTAL_SAMPLES=500 this is now defined when providing a custom control or choosing the default
 #AFR=163
@@ -1154,149 +1219,45 @@ printVCF() {
 
     echo "Building output VCF"
 
-    #these infolines always appear
-    infolines=( '##INFO=<ID=END,Number=1,Type=Integer,Description="End position of the SV">'
-    '##INFO=<ID=SVLEN,Number=1,Type=Integer,Description="SV length">'
-    '##INFO=<ID=SVTYPE,Number=1,Type=String,Description="SV type">' )
-    infoheader=( END SVLEN SVTYPE )
-    #build other infolines based on options
-    if [[ -z ${COHORT_VCF+x} ]]
-    then
-        startcol=7
-        offset=3
-        infolines+=( '##INFO=<ID=Query_ID,Number=1,Type=String,Description="Query sample ID">'
-        '##INFO=<ID=Control_support,Number=.,Type=String,Description="control samples sharing the SV">' )
-        infoheader+=( Query_ID )
-        if [[ $n -gt 1 ]]
-        then
-            infolines+=( '##INFO=<ID=Inheritance,Number=1,Type=String,Description="Inheritance pattern, one of de_novo, inherited, maternal, or paternal">' )
-            infoheadeer+=( Inheritance )
-        fi
-        infolines+=('##INFO=<ID=Genotype,Number=1,Type=String,Description="Genotype of the SV in the query sample">'
-        '##INFO=<ID=Alt_reads,Number=1,Type=Integer,Description="Number of reads in the query sample supporting the SV">'
-        '##INFO=<ID=Ref_reads,Number=1,Type=Integer,Description="Number of reference reads in the query sample at the SV locus">'
-        '##INFO=<ID=Total_reads,Number=1,Type=Integer,Description="Total number of reads at the SV locus (in the query sample)">' )
-        infoheader+=( Control_support Genotype Alt_reads Ref_reads Total_reads )
-        if [[ $n -eq 2 ]]
-        then
-            infolines+=( '##INFO=<ID=Parental_GT,Number=1,Type=String,Description="Parental genotype">' 
-                        '##INFO=<ID=Parental_alt_reads,Number=1,Type=String,Description="Parental supporting reads">'
-                        '##INFO=<ID=Parental_ref_reads,Number=1,Type=String,Description="Parental reference reads">'
-                        '##INFO=<ID=Parental_total_reads,Number=1,Type=String,Description="Parental total number of reads at SV locus">' )
-            infoheader+=( Parental_GT Parental_alt_reads Parental_ref_reads Parental_total_reads )
-        elif [[ $n -eq 3 ]]
-        then
-            infolines+=( '##INFO=<ID=Maternal_GT,Number=1,Type=String,Description="Maternal genotype">'
-                        '##INFO=<ID=Maternal_alt_reads,Number=1,Type=String,Description="Maternal supporting reads">'
-                        '##INFO=<ID=Maternal_ref_reads,Number=1,Type=String,Description="Maternal reference reads">'
-                        '##INFO=<ID=Maternal_total_reads,Number=1,Type=String,Description="Maternal total number of reads at SV locus">'
-                        '##INFO=<ID=Paternal_GT,Number=1,Type=String,Description="Paternal genotype">'
-                        '##INFO=<ID=Paternal_alt_reads,Number=1,Type=String,Description="Paternal supporting reads">'
-                        '##INFO=<ID=Paternal_ref_reads,Number=1,Type=String,Description="Paternal reference reads">'
-                        '##INFO=<ID=Paternal_total_reads,Number=1,Type=String,Description="Paternal total number of reads at SV locus">'
-                        )
-            infoheader+=( Maternal_GT Maternal_alt_reads Maternal_ref_reads Maternal_total_reads Paternal_GT Paternal_alt_reads Paternal_ref_reads Paternal_total_reads )
-        fi
-    else
-        startcol=7
-        offset=4
-        infolines+=( '##INFO=<ID=Query_ID,Number=1,Type=String,Description="Query sample ID">'
-        '##INFO=<ID=Cohort_support,Number=.,Type=String,Description="Cohort samples carrying the SV">'
-        '##INFO=<ID=Control_support,Number=.,Type=String,Description="control samples sharing the SV">'
-        '##INFO=<ID=Cohort_Pop_Count,Number=1,Type=Integer,Description="Number of cohort individuals carrying the SV">'
-       '##INFO=<ID=Cohort_Pop_Freq,Number=1,Type=Float,Description="Proportion of cohort individuals carrying the SV">'
-       '##INFO=<ID=Cohort_Allele_Count,Number=1,Type=Integer,Description="Number of cohort alleles carrying the SV">'
-        '##INFO=<ID=Cohort_Allele_Freq,Number=1,Type=Float,Description="Allele frequency of the SV in the cohort">' )
-        infoheader+=( Cohort_support Control_support Cohort_Pop_Count Cohort_Pop_Freq Cohort_Allele_Count Cohort_Allele_Freq )
-    fi
+    paste <( cat $input | awk -v qid=$qid 'BEGIN{OFS="\t"}\
+    NR==1{print $1,$2,$4,$5,$6,$7,$3,"Query_ID"}\
+    NR>1{print $1,$2,$4,$5,$6,$7,$3,qid}' ) <(cut -f8- $input ) > ${output}_vcf_rearrange.txt
 
-    if [[ ${run1kg} -eq 1 ]]
-    then
-        infolines+=( '##INFO=<ID=Allele_Freq_ALL_Control,Number=1,Type=Float,Description="Allele frequency of the SV in all 1KGP populations">' 
-        '##INFO=<ID=Genes,Number=.,Type=String,Description="Genes overlapped by the SV (gencode v45, +/-5kb)">' )
-        poplines=( '##INFO=<ID=Pop_Count_AFR,Number=1,Type=Integer,Description="1KGP AFR samples carrying the SV (n=163)">'
-                    '##INFO=<ID=Pop_Freq_AFR,Number=1,Type=Float,Description="Proportion of 1KGP AFR samples carrying the SV">'
-                    '##INFO=<ID=Pop_Count_AMR,Number=1,Type=Integer,Description="1KGP AMR samples carrying the SV (n=67)">'
-                    '##INFO=<ID=Pop_Freq_AMR,Number=1,Type=Float,Description="Proportion of 1KGP AMR samples carrying the SV">'
-                    '##INFO=<ID=Pop_Count_EAS,Number=1,Type=Integer,Description="1KGP EAS samples carrying the SV (n=95)">'
-                    '##INFO=<ID=Pop_Freq_EAS,Number=1,Type=Float,Description="Proportion of 1KGP EAS samples carrying the SV">'
-                    '##INFO=<ID=Pop_Count_EUR,Number=1,Type=Integer,Description="1KGP EUR samples carrying the SV (n=72)">'
-                    '##INFO=<ID=Pop_Freq_EUR,Number=1,Type=Float,Description="Proportion of 1KGP EUR samples carrying the SV">'
-                    '##INFO=<ID=Pop_Count_SAS,Number=1,Type=Integer,Description="1KGP SAS samples carrying the SV (n=103)">'
-                    '##INFO=<ID=Pop_Freq_SAS,Number=1,Type=Float,Description="Proportion of 1KGP SAS samples carrying the SV">'
-                    '##INFO=<ID=Pop_Count_ALL,Number=1,Type=Integer,Description="1KGP samples carrying the SV (all populations, n=500)">'
-                    '##INFO=<ID=Pop_Freq_ALL,Number=1,Type=Float,Description="Proportion of 1KGP samples carrying the SV (all populations)">'
-                    '##INFO=<ID=Allele_Count_AFR,Number=1,Type=Integer,Description="1KGP AFR alleles carrying the SV">'
-                    '##INFO=<ID=Allele_Freq_AFR,Number=1,Type=Float,Description="1KGP AFR allele frequency">'
-                    '##INFO=<ID=Allele_Count_AMR,Number=1,Type=Integer,Description="1KGP AMR alleles carrying the SV">'
-                    '##INFO=<ID=Allele_Freq_AMR,Number=1,Type=Float,Description="1KGP AMR allele frequency">'
-                    '##INFO=<ID=Allele_Count_EAS,Number=1,Type=Integer,Description="1KGP EAS alleles carrying the SV">'
-                    '##INFO=<ID=Allele_Freq_EAS,Number=1,Type=Float,Description="1KGP EAS allele frequency">'
-                    '##INFO=<ID=Allele_Count_EUR,Number=1,Type=Integer,Description="1KGP EUR alleles carrying the SV">'
-                    '##INFO=<ID=Allele_Freq_EUR,Number=1,Type=Float,Description="1KGP EUR allele frequency">'
-                    '##INFO=<ID=Allele_Count_SAS,Number=1,Type=Integer,Description="1KGP SAS alleles carrying the SV">'
-                    '##INFO=<ID=Allele_Freq_SAS,Number=1,Type=Float,Description="1KGP SAS allele frequency">'
-                    '##INFO=<ID=Allele_Count_ALL,Number=1,Type=Integer,Description="1KGP alleles carrying the SV (all populations)">'
-                    '##INFO=<ID=Allele_Freq_ALL,Number=1,Type=Float,Description="1KGP allele frequency (all populations)">' )
-        infoheader+=( Allele_Freq_ALL_Control Genes )
-        popheader=( Pop_Count_AFR Pop_Freq_AFR Pop_Count_AMR Pop_Freq_AMR Pop_Count_EAS Pop_Freq_EAS Pop_Count_EUR Pop_Freq_EUR Pop_Count_SAS Pop_Freq_SAS Pop_Count_ALL Pop_Freq_ALL ) 
-        popheader+=( Allele_Count_AFR Allele_Freq_AFR Allele_Count_AMR Allele_Freq_AMR Allele_Count_EAS Allele_Freq_EAS Allele_Count_EUR Allele_Freq_EUR Allele_Count_SAS Allele_Freq_SAS Allele_Count_ALL Allele_Freq_ALL )
-    else
-        infolines+=( '##INFO=<ID=Ctrl_support,Number=1,Type=String,Description="Samples in the custom control sample cohort that share the SV with the query sample">' 
-                    '##INFO=<ID=Allele_Freq_ALL_Control,Number=1,Type=Float,Description="Allele frequency of the SV in the custom control sample cohort">' 
-                    '##INFO=<ID=Genes,Number=.,Type=String,Description="Genes overlapped by the SV (gencode v45, +/-5kb)">' )
-        poplines=('##INFO=<ID=Pop_Count_ALL,Number=1,Type=Integer,Description="Number of individuals in the custom control sample cohort that carry the SV">'
-                '##INFO=<ID=Pop_Freq_ALL,Number=1,Type=Float,Description="Allele frequency of the SV in the custom control sample cohort">' 
-                '##INFO=<ID=Allele_Count_ALL,Number=1,Type=Integer,Description="Number of alleles in the custom control sample cohort with the SV">' 
-                '##INFO=<ID=Allele_Freq_ALL,Number=1,Type=Float,Description="Allele frequency of the SV in the custom control sample cohort">' )
-        infoheader+=( Ctrl_support Allele_Freq_ALL_Control Genes )
-        popheader=( Pop_Count_ALL Pop_Freq_ALL Allele_Count_ALL Allele_Freq_ALL )
-    fi
-
-    #annotation info lines are defined ~line 53
-    for anno in ${ALLANNOTATIONLIST[@]}
-    do
-        if [[ "${SELECTEDANNO}" =~ $anno ]]
-        then
-            newinfo=( $(echo ${ANNOTATIONINFO[$anno]} | tr '|' ' ') )
-            newheader=( $(echo ${ANNOTATIONHEADER[$anno]} | tr '|' ' ') )
-            infolines+=( ${newinfo[@]} )
-            infoheader+=( ${newheader[@]} )
-        fi
-    done
-
-    infolines+=( ${poplines[@]} )
-    infoheader+=( ${popheader[@]} )
-
-    #these infolines always appear
-    infolines+=( '##INFO=<ID=GT_homWT,Number=1,Type=Integer,Description="Count of hom-ref genotypes in controls">'
-                '##INFO=<ID=GT_het,Number=1,Type=Integer,Description="Count of het genotypes in controls">'
-                '##INFO=<ID=GT_homVAR,Number=1,Type=Integer,Description="Count of hom-alt genotypes in controls">'
-                '##INFO=<ID=HWE,Number=1,Type=String,Description="Hardy-Weinberg Equilibrium result (controls)">' )
-    infoheader+=( GT_homWT GT_het GT_homVAR HWE )
-
+    # infolines built on the input table header
+    tableheader=( $(head -n1 ${output}_vcf_rearrange.txt | cut -f 5- ) )
+    echo ${tableheader[@]}
 
     # pull file format and contig list from input vcf for future compatability with different references
     zgrep ^##fileformat $vcf > ${output}.vcf
     zgrep ^##contig= $vcf >> ${output}.vcf
 
+    infolines=()
+    for field in ${tableheader[@]}
+    do
+        echo $field
+        infolines+=( ${INFOCOLTEXT[$field]} )
+    done
+
     echo ${infolines[@]} | sed 's/##/\n##/g' | tail -n+2 >> ${output}.vcf
+
     echo -e '#CHROM\tPOS\tID\tREF\tALT\tQUAL\tFILTER\tINFO' >> ${output}.vcf
     # in a future version should output format tag from original VCF when running just one sample
 
-    infoheaderval=$( echo ${infoheader[@]} | tr ' ' '|' )
+    infoheaderval=$( echo ${tableheader[@]} | tr ' ' '|' )
 
-    sed 's/;/,/g' $input | awk -F '\t'  \
-    -v infoheader=${infoheaderval} \
-    -v qid=$qid \
-    -v startcol=$startcol \
-    -v infooffset=$offset \
-    'BEGIN{OFS="\t"; ninfo=split(infoheader, infoarray, "|")}\
-    NR>1{printf("%s\t%s\t%s\t%s\t%s\t%s\t%s\t", $1,$2,".",$4,$5,".",".");
-    printf("%s=%s;%s=%s;%s=%s;%s=%s;","END",$3,"SVLEN",$6,"SVTYPE",$7,"Query_ID",qid);
-    for(i=startcol;i<NF-1;i++){\
-        printf("%s=%s;",infoarray[i-infooffset],$i)};\
-    printf("%s=%s\n",infoarray[ninfo],$NF)}' >> ${output}.vcf
+    tail -n+2 ${output}_vcf_rearrange.txt | \
+        sed 's/;/,/g' | \
+        awk -F '\t' \
+            -v header=${infoheaderval} \
+            'BEGIN{OFS="\t"; ninfo=split(header,infoarray,"|")}
+            {
+                printf("%s\t%s\t%s\t%s\t%s\t%s\t%s\t",$1,$2,".",$3,$4,".",".")
+                for(i=5;i<=NF;i++)
+                {
+                    printf("%s=%s;", infoarray[i-4], $i)
+                }
+                printf("\n")
+            }' >> ${output}.vcf
 
     bcftools sort ${output}.vcf -O z -o ${finalOutput}.vcf.gz --write-index=tbi
 
@@ -1342,7 +1303,7 @@ printAnnotationHeader() {
     fi
     if [[ "${SELECTEDANNO}" =~ "tre" ]]
     then
-        tableheader+=( Vamos )
+        tableheader+=( TRE )
         let annotationcols+=1
     fi
     if [[ "${SELECTEDANNO}" =~ "mapflags" ]]
@@ -1370,9 +1331,9 @@ printTable() {
     # make different headers depending on input options
     tableheader=( CHROM POS End_Pos REF ALT SVLEN SVTYPE )
     case $nquery in
-        1) tableheader+=( Control_support GT Alt_Reads Ref_Reads Total_Reads ) ;;
-        2) tableheader+=( Inheritance Control_support GT Alt_Reads Ref_Reads Total_Reads Parental_GT Parental_Alt_Reads Parental_Ref_Reads Parental_Total_Reads) ;;
-        3) tableheader+=( Inheritance Control_support GT Alt_Reads Ref_Reads Total_Reads Maternal_GT Maternal_Alt_Reads Maternal_Ref_Reads Maternal_Total_Reads Paternal_GT Paternal_Alt_Reads Paternal_Ref_Reads Paternal_Total_Reads ) ;;
+        1) tableheader+=( Control_support Genotype Alt_Reads Ref_Reads Total_Reads ) ;;
+        2) tableheader+=( Inheritance Control_support Genotype Alt_Reads Ref_Reads Total_Reads Parental_GT Parental_Alt_Reads Parental_Ref_Reads Parental_Total_Reads) ;;
+        3) tableheader+=( Inheritance Control_support Genotype Alt_Reads Ref_Reads Total_Reads Maternal_GT Maternal_Alt_Reads Maternal_Ref_Reads Maternal_Total_Reads Paternal_GT Paternal_Alt_Reads Paternal_Ref_Reads Paternal_Total_Reads ) ;;
         *) tableheader+=( Cohort_support Control_support Pop_Count_Cohort Pop_Freq_Cohort Allele_Count_Cohort Allele_Freq_Cohort GT_coh_homWT GT_coh_het GT_coh_homVAR )
     esac
 
@@ -1380,7 +1341,7 @@ printTable() {
     
     
     annotationcols=1
-    tableheader+=( Allele_Freq_ALL Genes )
+    tableheader+=( Allele_Freq_ALL_Control Genes )
     annocols=( $(printAnnotationHeader) )
     let annotationcols+=${annocols[0]}
     tableheader+=( ${annocols[@]:1} )
@@ -1607,8 +1568,8 @@ annotateRun() {
 
         positionIndexedAnnotations ${output}_filled.txt ${output}
 
-        printTable ${output}_posannotations.txt ${output} ${finalOutput} "$n" $keepcol
-        printVCF $analysisquery ${finalOutput}_RESULTS.tsv ${output} ${finalOutput} "$n" $keepcol
+        printTable ${output}_posannotations.txt ${output} ${finalOutput} "$n"
+        printVCF $analysisquery ${finalOutput}_RESULTS.tsv ${output} ${finalOutput} "$n"
 
         filterTable ${finalOutput}_RESULTS.tsv ${finalOutput}
 
@@ -1681,7 +1642,7 @@ comparatorRun() {
         analysisParentalVcfs=( $temp.${validatedParentalVcfs[0]##*/} )
         if [[ ${#validatedParentalVcfs[@]} -gt 1 ]]
         then
-            analysisParentalVcfs=( $temp.${validatedParentalVcfs[1]##*/} )
+            analysisParentalVcfs+=( $temp.${validatedParentalVcfs[1]##*/} )
         fi
 
     else

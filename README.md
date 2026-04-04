@@ -201,7 +201,7 @@ All annotation options available in `annotate` are also available in `comparator
 Compare a proband VCF to two parental VCFs along with the 500 1KGP database and apply all available annotations
 
 ```
-needLR comparator -P examples/inputs/trio/HG007_Mo_hantrio_sniffles_chr22.vcf.gz,examples/inputs/trio/HG006_Fa_hantrio_sniffles.chr22.vcf.gz examples/inputs/trio/HG005_Pb_hantrio_sniffles_chr22.vcf.gz
+needLR comparator -P examples/inputs/trio/HG007_Mo_hantrio_sniffles_chr22.vcf.gz,examples/inputs/trio/HG006_Fa_hantrio_sniffles_chr22.vcf.gz examples/inputs/trio/HG005_Pb_hantrio_sniffles_chr22.vcf.gz
 ```
 
 Output for this example `examples/outputs/HG005_Pb_hantrio_sniffles_chr22_needLR_TRIO_1kg_v4.0/`
@@ -238,7 +238,7 @@ All annotation options available in `annotate` are also available in `bed`.
 Annotate kinnex data, limit to chr22, apply all available annotations
 
 ```
-needLR bed -R chr22 inputs/examples/kinnex_example_chr22.bed
+needLR bed -R chr22 examples/inputs/kinnex_example_chr22.bed
 ```
 Output for this example `examples/outputs/kinnex_example_chr22_needLR_bed_v4.0/`
 

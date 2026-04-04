@@ -1,4 +1,4 @@
-CHROM	POS	End_Pos	REF	ALT	SVLEN	SVTYPE	Inheritance	Control_support	GT	Alt_Reads	Ref_Reads	Total_Reads	Parental_GT	Parental_Alt_Reads	Parental_Ref_Reads	Parental_Total_Reads	Allele_Freq_ALL	Genes	GENCC_phenotype	GENCC_support	GENCC_MOI	Pop_Count_ALL	Pop_Freq_ALL	Allele_Count_ALL	Allele_Freq_ALL	GT_homWT	GT_het	GT_homVAR	p	q	HWE
+CHROM	POS	End_Pos	REF	ALT	SVLEN	SVTYPE	Inheritance	Control_support	Genotype	Alt_Reads	Ref_Reads	Total_Reads	Parental_GT	Parental_Alt_Reads	Parental_Ref_Reads	Parental_Total_Reads	Allele_Freq_ALL_Control	Genes	GENCC_phenotype	GENCC_support	GENCC_MOI	Pop_Count_ALL	Pop_Freq_ALL	Allele_Count_ALL	Allele_Freq_ALL	GT_homWT	GT_het	GT_homVAR	p	q	HWE
 chr22	12337353	12337354	N	GTTATTATGTGACGATATTTTGTTTTCCACAATGGGCCGCAAAGCACTCTTTGAGATGAATGCACCCGTCAAAAGACATTTCTGAGAATGCTTCTAGGT	99	INS	not_inherited	query_only	0/1	9	20	29	./.	.	.	0	0	.	.	.	.	0	0	0	0	57	0	0	1	0	HWE_FALSE
 chr22	13227312	13227412	N	<DEL>	-100	DEL	not_inherited	query_only	1/1	2	0	2	./.	.	.	0	0	.	.	.	.	0	0	0	0	57	0	0	1	0	HWE_FALSE
 chr22	13248082	13248182	N	<DEL>	-100	DEL	inherited	query_only	1/1	27	0	27	1/1	13	0	13	0	.	.	.	.	0	0	0	0	57	0	0	1	0	HWE_FALSE

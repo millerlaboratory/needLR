@@ -1,4 +1,4 @@
-CHROM	POS	End_Pos	REF	ALT	SVLEN	SVTYPE	Control_support	GT	Alt_Reads	Ref_Reads	Total_Reads	Allele_Freq_ALL	Genes	OMIM_phenotype	OMIM_MOI	HiConf	Pop_Count_ALL	Pop_Freq_ALL	Allele_Count_ALL	Allele_Freq_ALL	GT_homWT	GT_het	GT_homVAR	p	q	HWE
+CHROM	POS	End_Pos	REF	ALT	SVLEN	SVTYPE	Control_support	Genotype	Alt_Reads	Ref_Reads	Total_Reads	Allele_Freq_ALL_Control	Genes	OMIM_phenotype	OMIM_MOI	HiConf	Pop_Count_ALL	Pop_Freq_ALL	Allele_Count_ALL	Allele_Freq_ALL	GT_homWT	GT_het	GT_homVAR	p	q	HWE
 chr22	12337353	12337354	N	GTTATTATGTGACGATATTTTGTTTTCCACAATGGGCCGCAAAGCACTCTTTGAGATGAATGCACCCGTCAAAAGACATTTCTGAGAATGCTTCTAGGT	99	INS	query_only	0/1	9	20	29	0	.	.	.	.	0	0	0	0	57	0	0	1	0	HWE_FALSE
 chr22	13227312	13227412	N	<DEL>	-100	DEL	query_only	1/1	2	0	2	0	.	.	.	.	0	0	0	0	57	0	0	1	0	HWE_FALSE
 chr22	13248082	13248182	N	<DEL>	-100	DEL	query_only	1/1	27	0	27	0	.	.	.	.	0	0	0	0	57	0	0	1	0	HWE_FALSE

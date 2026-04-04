@@ -28,7 +28,7 @@ Access the depricated needLR_v3.4 README [here](https://github.com/jgust1/needLR
 Access the depricated needLR_v3.5 README [here](https://github.com/jgust1/needLR/blob/main/docs/needLR_v3.4_README_deprecated_20260403.md)
 
 #### Please cite our 2025 needLR preprint:  
-<sup>*Gustafson JA, Lin J, Eichler EE, Miller DE. needLR: Long-read structural variant annotation with population-scale frequency estimation. arXiv preprint arXiv:2512.08175. 2025 Dec 9.*</sup>
+<sup>*Gustafson JA, Lin J, Zalusky MPGZ, Eichler EE, Miller DE. needLR: Long-read structural variant annotation with population-scale frequency estimation. arXiv preprint arXiv:2512.08175. 2025 Dec 9.*</sup>
 
 *Please contact jgust1@uw.edu with issues or suggestions.*
 
@@ -84,7 +84,7 @@ Alternatively, you can build a conda environment using the `.yaml` file: `envs/n
 If using a custom installation, you must use flag `-B` with your path to `needLR/backend_files`. These files are included in the conda installation and apptainer, but are not hosted on github. You can download those here:
 
 ```
-wget https://s3.amazonaws.com/1000g-ont/needLR/needLR_v4.0_backend_files.tar.gz
+wget https://s3.amazonaws.com/1000g-ont/needLR/needLR_v4.0-backend-files.tar.gz
 tar -xvzf needLR_v4.0_backend_files.tar.gz
 ```
 

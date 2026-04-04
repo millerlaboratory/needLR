@@ -3,32 +3,19 @@ set -euo pipefail
 
 #### set default paths and values
 
-### testing block for paths
 version=4.0
-OUTPUTDIR="$(pwd)/needLR_output_manuscript_examples"
-temp=tempNeedlr/temp
-#temp=$(mktemp -u -t needlr.temp.XXXXX)
+OUTPUTDIR="$(pwd)/needLR_output"
+temp=$(mktemp -u -t needlr.temp.XXXXX)
 
 thisscript=$(realpath "$0")
 scriptpath=${thisscript%/*}
-refloc=$scriptpath/backend_files
+refloc=REFLOCPATH
 FILTERPASS=0 #this setting is to include non-passing variants or not. default is to filter nothing.
 run1kg=1 #this setting determines whether or not to run 1kg specific annotation scripts or use a custom control set
-THREADS=30
+THREADS=1
 ANALYSISREGION="All"
 DATA1KG="$refloc/UWONT_500_sniffles_2.6.2_preproc2_T31_v4.2.2.vcf.gz"
 
-
-
-#OUTPUTDIR="$(pwd)/needLR_output"
-#temp=tempNeedlr
-#temp=$(mktemp -u -t needlr.temp.XXXXX)
-#refloc=${CONDA_PREFIX}/backend_files
-#thisscript=$(realpath "$0")
-#scriptpath=${thisscript%/*}
-#FILTERPASS=0 #this setting is to include non-passing variants or not. default is to filter nothing.
-#run1kg=1 #this setting determines whether or not to run 1kg specific annotation scripts or use a custom control set
-#THREADS=1
 
 # truvari parameters
 
@@ -344,6 +331,8 @@ case ${subcommand} in
     annotate|bed|comparator) ;;
     help|?) help
             exit 0 ;;
+    *version) echo "NeedLR version $version"
+        exit 0 ;;
     *) echo -e "\nCommand $subcommand not recognized"
         help
         exit 1 ;;

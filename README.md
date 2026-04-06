@@ -78,7 +78,7 @@ needLR_v4.0 has three subcommands:
 
 ## INSTALLATION AND SET UP
 
-Please install needLR using conda or apptainer.
+NeedLR will soon be available to install using bioconda and docker. Until then:
 
 Alternatively, you can make a custom conda installation following these steps:
 

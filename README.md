@@ -28,7 +28,7 @@ Access the depricated needLR_v3.4 README [here](https://github.com/jgust1/needLR
 Access the depricated needLR_v3.5 README [here](https://github.com/jgust1/needLR/blob/main/docs/needLR_v3.4_README_deprecated_20260403.md)
 
 #### Please cite our 2025 needLR preprint:  
-<sup>*Gustafson JA, Lin J, Zalusky MPGZ, Eichler EE, Miller DE. needLR: Long-read structural variant annotation with population-scale frequency estimation. arXiv preprint arXiv:2512.08175. 2025 Dec 9.*</sup>
+<sup>*Gustafson JA, Lin J, Zalusky MPG, Eichler EE, Miller DE. needLR: Long-read structural variant annotation with population-scale frequency estimation. arXiv preprint arXiv:2512.08175. 2025 Dec 9.*</sup>
 
 *Please contact jgust1@uw.edu with issues or suggestions.*
 
@@ -68,8 +68,8 @@ This version of needLR incorporates SV calls made by Sniffles_v2.6.2 for 500 1KG
 
 needLR_v4.0 has three subcommands:
 * [annotate](#subcommand-annotate): Compares one or more query vcfs to a pre-merged, multisample vcf of 500 1KGP samples and annotates the SVs in the query individual. A custom control set may optionally be provided. If a multisample vcf is provided, SVs that are present in one more affected individuals in the cohort are annotated;.
-* [comparator](#subcommand:-comparator): Compares a single query sample and one or two parental samples to a pre-merged, multisample vcf of 500 1KGP samples and annotates the SVs in the query individual. This function uniquely annotates the SVs from the query vcf as being "inherited", "maternal", "paternal", "de_novo", or "not_inherited" based on SVs from the parental vcf(s).
-* [bed](#subcommand:-bed): Annotates any sorted bed file with needLR annotations
+* [comparator](#subcommand-comparator): Compares a single query sample and one or two parental samples to a pre-merged, multisample vcf of 500 1KGP samples and annotates the SVs in the query individual. This function uniquely annotates the SVs from the query vcf as being "inherited", "maternal", "paternal", "de_novo", or "not_inherited" based on SVs from the parental vcf(s).
+* [bed](#subcommand-bed): Annotates any sorted bed file with needLR annotations
 
 [Follow these steps to make a custom cohort for use either as a query or a control.](https://github.com/jgust1/needLR/blob/main/docs/custom_cohort.md)
 
@@ -84,7 +84,7 @@ Alternatively, you can build a conda environment using the `.yaml` file: `envs/n
 If using a custom installation, you must use flag `-B` with your path to `needLR/backend_files`. These files are included in the conda installation and apptainer, but are not hosted on github. You can download those here:
 
 ```
-wget https://s3.amazonaws.com/1000g-ont/needLR/needLR_v4.0-backend-files.tar.gz
+wget https://s3.amazonaws.com/1000g-ont/needLR/needLR-v4.0-backend-files.tar.gz
 tar -xvzf needLR_v4.0_backend_files.tar.gz
 ```
 
@@ -129,15 +129,21 @@ Additional options:
 |-L| A .txt file that lists the full file path(s) to the query vcf(s)  See above for recommended sniffles2 version/parameters |
 
 General Annotation options
+| | |
+| :------------ |:-------------|
 |--all| additional CPU threads to pass to bcftools (default TRUE) |
 
 A la Carte Annotation options
+| | |
+| :------------ |:-------------|
 |--omim| annotate VCF with OMIM phenotypes and modes of inheritance (default FALSE) |
 |--hpo| annotate VCF with OMIM phenotype associated HPO terms (default FALSE) |
 |--gencc| annotate VCF with GENCC phenotypes, level of support, and modes of inheritance (default FALSE) |
 |--pli| annotate VCF with probability of loss-of-function intolerance (pLI) scores from gnomADg v4.1 (default FALSE) |
 
 Position Annotation options:
+| | |
+| :------------ |:-------------|
 |--utr| annotate SV UTR overlap (gencodev45) (default FALSE) |
 |--cds| annotate SV coding exon overlap (gencodev45) (default FALSE) |
 |--oreganno| annotate SV regulatory element overlap (ORegAnno)(default FALSE) |

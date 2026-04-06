@@ -131,7 +131,7 @@ Additional options:
 General Annotation options
 | | |
 | :------------ |:-------------|
-|--all| additional CPU threads to pass to bcftools (default TRUE) |
+|--all| annotate VCF with all available options listed below (default TRUE) |
 
 A la Carte Annotation options
 | | |

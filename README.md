@@ -32,7 +32,7 @@ Access the depricated needLR_v3.5 README [here](https://github.com/jgust1/needLR
 
 *Please contact jgust1@uw.edu with issues or suggestions.*
 
-needLR is a command line tool that uses Truvari merging to compare query structural variant (SV) vcfs to our collection of 1000 Genomes Project (1KGP) samples sequenced by Oxford Nanopore Technologies long-read sequencing (ONT LRS). The output includes .vcf and .txt files with detailed annotations about the genomic context, OMIM phenotype association, and ancestry-specific allele frequencies of each of the SVs in the query vcf. 
+needLR is a command line tool that uses Truvari merging to compare query structural variant (SV) vcfs to our collection of 1000 Genomes Project (1KGP) samples sequenced by Oxford Nanopore Technologies long-read sequencing (ONT LRS). The output includes .vcf and .tsv files with detailed annotations about the genomic context, OMIM phenotype association, and ancestry-specific allele frequencies of each of the SVs in the query vcf. 
 
 There are 3 key concepts that drive this project:  
 * More than half of suspected Mendelian conditions remain molecularly unsolved after current clinical testing methods.  
@@ -80,13 +80,21 @@ needLR_v4.0 has three subcommands:
 
 Please install needLR using conda or apptainer.
 
-Alternatively, you can build a conda environment using the `.yaml` file: `envs/needLR-4.0.yaml` and then clone this repository.
-If using a custom installation, you must use flag `-B` with your path to `needLR/backend_files`. These files are included in the conda installation and apptainer, but are not hosted on github. You can download those here:
+Alternatively, you can make a custom conda installation following these steps:
+
+1. Build a conda environment using the `.yaml` file: `envs/needLR-4.0.yaml`
+2. Clone this repository.
+3. Copy or make a sm link of `needLR` and `src/` in this repository to `${CONDA_PREFIX}/bin`
+4. Download the backend files required to run needLR from AWS: 
 
 ```
 wget https://s3.amazonaws.com/1000g-ont/needLR/needLR-v4.0-backend-files.tar.gz
 tar -xvzf needLR_v4.0_backend_files.tar.gz
 ```
+
+If using a custom installation, you **must** use flag `-B` with your path to the `backend_files` folder downloaded in step 4 above.
+
+
 
 ### Dependencies included in package:
 
@@ -126,7 +134,8 @@ Additional options:
 |-Q| full path to a query cohort VCF, merged with Truvari |
 |-O| output directory name (default is needLR_output relative to current directory) |
 |-R| restrict analysis to a region (e.g. chr22:12345-23456 **or** chr22)|
-|-L| A .txt file that lists the full file path(s) to the query vcf(s)  See above for recommended sniffles2 version/parameters |
+|-L| A .txt file that lists the full file path(s) to the query vcf(s) \
+See above for recommended sniffles2 version/parameters |
 
 General Annotation options
 | | |
@@ -138,17 +147,17 @@ A la Carte Annotation options
 | :------------ |:-------------|
 |--omim| annotate VCF with OMIM phenotypes and modes of inheritance (default FALSE) |
 |--hpo| annotate VCF with OMIM phenotype associated HPO terms (default FALSE) |
-|--gencc| annotate VCF with GENCC phenotypes, level of support, and modes of inheritance (default FALSE) |
-|--pli| annotate VCF with probability of loss-of-function intolerance (pLI) scores from gnomADg v4.1 (default FALSE) |
-
-Position Annotation options:
-| | |
-| :------------ |:-------------|
+|--gencc| annotate VCF with GENCC phenotypes, level of support, \
+and modes of inheritance (default FALSE) |
+|--pli| annotate VCF with probability of loss-of-function intolerance \
+(pLI) scores from gnomADg v4.1 (default FALSE) |
 |--utr| annotate SV UTR overlap (gencodev45) (default FALSE) |
 |--cds| annotate SV coding exon overlap (gencodev45) (default FALSE) |
-|--oreganno| annotate SV regulatory element overlap (ORegAnno)(default FALSE) |
+|--oreganno| annotate SV regulatory element overlap \
+(ORegAnno)(default FALSE) |
 |--tre| annotate SV tandem repeat overlap (VAMOS) (default FALSE) |
-|--mapflags| annotate SV with overlap of difficult to map regions (centromeres, telomeres, repeats,segdups, gaps, homopolymers) (default FALSE) |
+|--mapflags| annotate SV with overlap of difficult to map regions (centromeres, \
+telomeres, repeats,segdups, gaps, homopolymers) (default FALSE) |
 |--hiconf| annotate SVs fully contained in high-confidence regions (default FALSE) |
 
 #### Examples
@@ -270,7 +279,7 @@ Output:
 
 ## ANALYZING OUTPUT
 
-The `{SAMPLE_ID}_RESULTS*.txt` files can easily be opened in Excel. 
+The `{SAMPLE_ID}_RESULTS*.tsv` files can easily be opened in Excel. 
 _Be sure that Excel is set up to delimit columns by tab (and only tab)_
 
 Below are the output columns. Some are specific to the needLR subcommand used. "Query SV" is used to refer to the SV identified in the proband/query sample _or_, in the case of `bed`, it is any SV. 

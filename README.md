@@ -191,7 +191,6 @@ needLR annotate -Q examples/inputs/merged_cohort_chr22.vcf.gz -R chr22:10731900-
 Output for this example `examples/outputs/merged_cohort_chr22_needLR_1kg_v4.0/`
 
 
-
 ### Subcommand: comparator
 
 `comparator` requires a single query VCF and at least one parental VCF provided with option `-P`

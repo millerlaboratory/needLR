@@ -147,17 +147,13 @@ A la Carte Annotation options
 | :------------ |:-------------|
 |--omim| annotate VCF with OMIM phenotypes and modes of inheritance (default FALSE) |
 |--hpo| annotate VCF with OMIM phenotype associated HPO terms (default FALSE) |
-|--gencc| annotate VCF with GENCC phenotypes, level of support, \
-and modes of inheritance (default FALSE) |
-|--pli| annotate VCF with probability of loss-of-function intolerance \
-(pLI) scores from gnomADg v4.1 (default FALSE) |
+|--gencc| annotate VCF with GENCC phenotypes, level of support, and modes of inheritance (default FALSE) |
+|--pli| annotate VCF with probability of loss-of-function intolerance (pLI) scores from gnomADg v4.1 (default FALSE) |
 |--utr| annotate SV UTR overlap (gencodev45) (default FALSE) |
 |--cds| annotate SV coding exon overlap (gencodev45) (default FALSE) |
-|--oreganno| annotate SV regulatory element overlap \
-(ORegAnno)(default FALSE) |
+|--oreganno| annotate SV regulatory element overlap (ORegAnno)(default FALSE) |
 |--tre| annotate SV tandem repeat overlap (VAMOS) (default FALSE) |
-|--mapflags| annotate SV with overlap of difficult to map regions (centromeres, \
-telomeres, repeats,segdups, gaps, homopolymers) (default FALSE) |
+|--mapflags| annotate SV with overlap of difficult to map regions (centromeres, telomeres, repeats,segdups, gaps, homopolymers) (default FALSE) |
 |--hiconf| annotate SVs fully contained in high-confidence regions (default FALSE) |
 
 #### Examples

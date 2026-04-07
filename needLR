@@ -148,9 +148,10 @@ INFOCOLTEXT[HiConf]='##INFO=<ID=HiConf,Number=1,Type=String,Description="SV full
 #SAS=103 # these are also defined when providing a control
 
 ## fancy printing
-bold=$(tput bold)
-normal=$(tput sgr0)
-
+#bold=$(tput bold)
+#normal=$(tput sgr0)
+bold=""
+normal=""
 
 
 

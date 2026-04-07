@@ -7,13 +7,13 @@
 
 needLR_v4.0 has replaced needLR_v3.5 as of April 3rd, 2026. Major changes include:
 * needLR modes are now subcommands -- please see updated usage
-* custom control sets may be used with any subcommand
-* input can be provided as a single VCF, a list of files, or a merged multi sample VCF
-* analysis can be restricted to a smaller chromosomal region
-* annotations can be selected a la carte
+* Custom control sets may be used with any subcommand
+* Input can be provided as a single VCF, a list of files, or a merged multi sample VCF
+* Analysis can be restricted to a smaller chromosomal region
+* Annotations can be selected a la carte
 * OMIM and GenCC annotations are now multicolumn for easier sorting
 * needLR trio and duo preserve parental read support levels
-* a reference fasta is no longer required -- currently needLR only works for hg38
+* A reference fasta is no longer required -- currently needLR only works for hg38
 * vcfs do not need to be bgzipped and indexed
 
 Changes from 3.4 -> 3.5
@@ -67,7 +67,7 @@ This version of needLR incorporates SV calls made by Sniffles_v2.6.2 for 500 1KG
 5. Annotate query sample SVs with genomic context, OMIM phenotype association, and Hardy-Weinberg equilibrium check
 
 needLR_v4.0 has three subcommands:
-* [annotate](#subcommand-annotate): Compares one or more query vcfs to a pre-merged, multisample vcf of 500 1KGP samples and annotates the SVs in the query individual. A custom control set may optionally be provided. If a multisample vcf is provided, SVs that are present in one more affected individuals in the cohort are annotated;.
+* [annotate](#subcommand-annotate): Compares one or more query vcfs to a pre-merged, multisample vcf of 500 1KGP samples and annotates the SVs in the query individual. A custom control set may optionally be provided. If a multisample vcf is provided, SVs that are present in one more affected individuals in the cohort are annotated.
 * [comparator](#subcommand-comparator): Compares a single query sample and one or two parental samples to a pre-merged, multisample vcf of 500 1KGP samples and annotates the SVs in the query individual. This function uniquely annotates the SVs from the query vcf as being "inherited", "maternal", "paternal", "de_novo", or "not_inherited" based on SVs from the parental vcf(s).
 * [bed](#subcommand-bed): Annotates any sorted bed file with needLR annotations
 
@@ -78,7 +78,7 @@ needLR_v4.0 has three subcommands:
 
 ## INSTALLATION AND SET UP
 
-NeedLR will soon be available to install using bioconda and docker. Until then:
+needLR will soon be available to install using bioconda and docker. Until then:
 
 Alternatively, you can make a custom conda installation following these steps:
 
@@ -134,7 +134,7 @@ Additional options:
 |-Q| full path to a query cohort VCF, merged with Truvari |
 |-O| output directory name (default is needLR_output relative to current directory) |
 |-R| restrict analysis to a region (e.g. chr22:12345-23456 **or** chr22)|
-|-L| A .txt file that lists the full file path(s) to the query vcf(s) \
+|-L| A .txt file that lists the full file path(s) to the query vcf(s) |
 See above for recommended sniffles2 version/parameters |
 
 General Annotation options
@@ -386,6 +386,21 @@ Below are the output columns. Some are specific to the needLR subcommand used. "
 | Maternal_Ref_Reads  |   Count of reads supporting reference in second parental VCF  (Parental_genotype when one VCF supplied) |
 | Maternal_Total_Reads  |   Total count of reads at SV locus in second parental VCF  (Parental_genotype when one VCF supplied) |
 | Inheritance   |   Predicted inheritence pattern |
+
+
+## RECOMMENDATIONS FOR ANALYSIS
+
+In our experience using sniffles_v2.6.2 vcfs as queries (ONT sequenced, ~20-30X depth of coverage), we tend to see ~200-500 unique SVs per sample (ie. 1KGP allele frequency = 0). To further prioritize candidate pathogenic SVs, we recommend the following considerations:
+
+Highest priority SVs:
+* In CDS or UTR of a gene associated with a phenotype (OMIM, HPO, GenCC)
+* In an annotated ORegAnno region
+* >10 supporting reads
+* pLI > 0.9
+
+Regions of lower confidence:
+* Inside tandem repeat or segmental duplication regions (especially INS)
+* Within centromeres/telomeres
 
 
 ## NOTES ON TRUVARI PARAMETERS

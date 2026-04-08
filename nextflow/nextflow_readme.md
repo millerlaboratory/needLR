@@ -3,14 +3,16 @@
 A wrapper around needLR to make running multiple VCFs concurrently more convenient.
 
 Currently implemented for:
-    - single VCFs
-    - merged cohort VCFs
-    - custom controls and 1kg controls
-    - bed annotations
+
+    * single VCFs
+    * merged cohort VCFs
+    * custom controls and 1kg controls
+    * bed annotations
 
 Currently **not** available for:
-    - trios
-    - duos
+
+    * trios
+    * duos
 
 ## Usage
 

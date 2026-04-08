@@ -1,6 +1,5 @@
 process run_needLR_annotate {
     publishDir "${params.publish_dir}/${sample_id}", mode: 'copy'
-    label 'needLR'
     
     input:
         path( vcf )
@@ -10,14 +9,21 @@ process run_needLR_annotate {
         val( isMerged )
 
     output:
-        path "${sample_id}_needLR_1k_v4.0", emit: results_folder
+        path "${sample_id}_needLR_1kg_v4.0", emit: results_folder
 
     script:
         """
+        expectedOutput="${sample_id}"
+        if [[ \${expectedOutput} =~ "gz" ]]
+        then
+            actualOutput=\${expectedOutput%*.vcf.gz}
+        else
+            actualOutput=\${expectedOutput%*.vcf}
+        fi
         argstopass=()
         annotationString=${annotations}
-        annotationList=( $( echo \${annotationString}| tr ',' ' ') )
-        if [[ \${annotationString} ~= "all" ]]
+        annotationList=( \$( echo \${annotationString}| tr ',' ' ') )
+        if [[ ! \${annotationString} =~ "all" ]]
         then
             for anno in \${annotationList[@]}
             do
@@ -32,13 +38,19 @@ process run_needLR_annotate {
         then
             needLR annotate -T ${task.cpus} -Q ${vcf} \${argstopass[@]}
         else
-            needLR annotate -T ${task.cpus} \${argstopass[@]} ${vcf}
+            if [[ \${#argstopass[@]} -gt 0 ]]
+            then
+                needLR annotate -T ${task.cpus} \${argstopass[@]} ${vcf}
+            else
+                needLR annotate -T ${task.cpus} ${vcf}
+            fi
+        fi
+        mv needLR_output/\${actualOutput}_needLR_1kg_v4.0 ${sample_id}_needLR_1kg_v4.0
         """
 }
 
 process run_needLR_annotate_custom_controls {
     publishDir "${params.publish_dir}/${sample_id}", mode: 'copy'
-    label 'needLR'
     
     input:
         path( vcf )
@@ -53,10 +65,17 @@ process run_needLR_annotate_custom_controls {
 
     script:
         """
+        expectedOutput="${sample_id}"
+        if [[ \${expectedOutput} =~ "gz" ]]
+        then
+            actualOutput=\${expectedOutput%*.vcf.gz}
+        else
+            actualOutput=\${expectedOutput%*.vcf}
+        fi
         argstopass=()
         annotationString=${annotations}
-        annotationList=( $( echo \${annotationString}| tr ',' ' ') )
-        if [[ \${annotationString} ~= "all" ]]
+        annotationList=( \$( echo \${annotationString}| tr ',' ' ') )
+        if [[ ! \${annotationString} =~ "all" ]]
         then
             for anno in \${annotationList[@]}
             do
@@ -71,7 +90,14 @@ process run_needLR_annotate_custom_controls {
         then
             needLR annotate -T ${task.cpus} -Q ${vcf} -C ${control_vcf} \${argstopass[@]}
         else
-            needLR annotate -T ${task.cpus} -C ${control_vcf} \${argstopass[@]} ${vcf}
+            if [[ \${#argstopass[@]} -gt 0 ]]
+            then
+                needLR annotate -T ${task.cpus} -C ${control_vcf} \${argstopass[@]} ${vcf}
+            else
+                needLR annotate -T ${task.cpus} -C ${control_vcf} ${vcf}
+            fi
+        fi
+        mv needLR_output/\${actualOutput}_needLR_customControl_v4.0 ${sample_id}_needLR_customControl_v4.0
         """
 }
 

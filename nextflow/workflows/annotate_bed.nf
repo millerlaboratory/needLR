@@ -2,7 +2,7 @@ process run_needLR_bed {
     publishDir "${params.publish_dir}/${sample_id}", mode: 'copy'
     label 'needLR'
 
-    cpus: 1
+    cpus 1
     
     input:
         path( bed )
@@ -15,10 +15,13 @@ process run_needLR_bed {
 
     script:
         """
+        expectedOutput="${sample_id}"
+        actualOutput=\${expectedOutput%*.bed}
+
         argstopass=()
         annotationString=${annotations}
-        annotationList=( $( echo \${annotationString}| tr ',' ' ') )
-        if [[ \${annotationString} ~= "all" ]]
+        annotationList=( \$( echo \${annotationString}| tr ',' ' ') )
+        if [[ ! \${annotationString} =~ "all" ]]
         then
             for anno in \${annotationList[@]}
             do
@@ -30,5 +33,6 @@ process run_needLR_bed {
             argstopass+=( -R ${region} )
         fi
         needLR bed \${argstopass[@]} ${bed}
+        mv needLR_output/\${actualOutput}_needLR_1kg_v4.0 ${sample_id}_needLR_1kg_v4.0
         """
 }

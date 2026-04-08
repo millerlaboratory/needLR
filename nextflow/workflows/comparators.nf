@@ -16,8 +16,8 @@ process run_needLR_duo {
         """
         argstopass=()
         annotationString=${annotations}
-        annotationList=( $( echo \${annotationString}| tr ',' ' ') )
-        if [[ \${annotationString} ~= "all" ]]
+        annotationList=( \$( echo \${annotationString}| tr ',' ' ') )
+        if [[ ! \${annotationString} =~ "all" ]]
         then
             for anno in \${annotationList[@]}
             do
@@ -50,8 +50,8 @@ process run_needLR_duo_custom_controls {
         """
         argstopass=()
         annotationString=${annotations}
-        annotationList=( $( echo \${annotationString}| tr ',' ' ') )
-        if [[ \${annotationString} ~= "all" ]]
+        annotationList=( \$( echo \${annotationString}| tr ',' ' ') )
+        if [[ ! \${annotationString} =~ "all" ]]
         then
             for anno in \${annotationList[@]}
             do
@@ -85,8 +85,8 @@ process run_needLR_trio {
         """
         argstopass=()
         annotationString=${annotations}
-        annotationList=( $( echo \${annotationString}| tr ',' ' ') )
-        if [[ \${annotationString} ~= "all" ]]
+        annotationList=( \$( echo \${annotationString}| tr ',' ' ') )
+        if [[ ! \${annotationString} =~ "all" ]]
         then
             for anno in \${annotationList[@]}
             do
@@ -119,8 +119,8 @@ process run_needLR_trio_custom_controls {
         """
         argstopass=()
         annotationString=${annotations}
-        annotationList=( $( echo \${annotationString}| tr ',' ' ') )
-        if [[ \${annotationString} ~= "all" ]]
+        annotationList=( \$( echo \${annotationString}| tr ',' ' ') )
+        if [[ ~ \${annotationString} =~ "all" ]]
         then
             for anno in \${annotationList[@]}
             do

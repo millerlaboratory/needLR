@@ -6,3 +6,4 @@ nextflow/.nextflow*
 nextflow/.nextflow
 nextflow/results/*
 nextflow/work/*
+nextflow/workflows/comparators.nf

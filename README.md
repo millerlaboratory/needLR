@@ -17,15 +17,15 @@ needLR_v4.0 has replaced needLR_v3.5 as of April 3rd, 2026. Major changes includ
 * vcfs do not need to be bgzipped and indexed
 
 Changes from 3.4 -> 3.5
-* Increase to 500 control sampels from the 1KGP-LRSC
+* Increase to 500 control samples from the 1KGP-LRSC
 * New annotations: pLI (Probability of Loss-of-function Intolerance) scores and [ORegAnno](https://www.bcgsc.ca/resources/software/oreganno) annotation
 * Gene annotation buffer is increased from 1kbp to  5kbp
 * UTRs and coding exons (CDS) are annotated seperately
 * Vamos STR and VNTR are combined into one annotation
 
-Access the depricated needLR_v3.4 README [here](https://github.com/millerlab/needLR/blob/main/docs/needLR_v3.4_README_depricated_20251213.md)
+Access the deprecated needLR_v3.4 README [here](https://github.com/millerlab/needLR/blob/main/docs/needLR_v3.4_README_depricated_20251213.md)
 
-Access the depricated needLR_v3.5 README [here](https://github.com/millerlab/needLR/blob/main/docs/needLR_v3.4_README_deprecated_20260403.md)
+Access the deprecated needLR_v3.5 README [here](https://github.com/millerlab/needLR/blob/main/docs/needLR_v3.4_README_deprecated_20260403.md)
 
 #### Please cite our 2025 needLR preprint:  
 <sup>*Gustafson JA, Lin J, Zalusky MPG, Eichler EE, Miller DE. needLR: Long-read structural variant annotation with population-scale frequency estimation. arXiv preprint arXiv:2512.08175. 2025 Dec 9.*</sup>
@@ -121,7 +121,7 @@ If using a custom installation, you **must** use flag `-B` with your path to the
    -H                     : [ help ]
    ```
 
-Alternatively, you can run needLR through our nextflow wrapper, which can speed up running many samples at once when a server or cluster with many cpus is available. [See the documentation here.](https://github.com/millerlab/needLR/blob/main/nextflow/nextflow_readme.md)
+Alternatively, you can run needLR through our nextflow wrapper, which can speed up running many samples at once when a server or cluster with many cpus is available. [See the documentation here.](https://github.com/millerlab/needLR/blob/nextflow/nextflow/nextflow_readme.md)
 
 ### Subcommand: annotate
 

@@ -10,7 +10,6 @@ This wrapper assists in running needLR v4.0 on more than one sample concurrently
 Control Reference Dataset: ${params.control_vcf}
 Region of Interest: ${params.region}
 CPUS: ${params.cpus}
-Per Run CPUs: ${params.taskcpus}
 Merged VCFS:    ${params.merged}
 
 
@@ -40,22 +39,37 @@ workflow {
                         .set { file_list }
     def id_list = file(params.fileList).readLines().each { line -> line.split('\\/')[-1]}
     ch_ids=Channel.fromList(id_list)
+
+    annotation_string=params.all_annotations
     if(params.subcommand=="annotate"){. 
-        if(params.control_vcf=="")
+        if(params.control_vcf==null)
         {
-            run_needLR_annotate(
-                ch_inputs,
-                ch_ids,
-                params.region,
-                annotation_string,
-                params.merged
-            )
+            print """run_needLR_annotate(
+                ${ch_inputs},
+                ${ch_ids},
+                ${params.region},
+                ${params.annotation_string},
+                ${params.merged}
+            )"""
+        } else {
+            ch_controls = Channel.fromPath(params.control_vcf)
+            print """run_needLR_annotate_custom_controls(
+                ${ch_inputs},
+                ${ch_controls},
+                ${ch_ids},
+                ${params.region},
+                ${params.annotation_string},
+                ${params.merged}
+            )"""
         }
-
-    } else if(params.subcommand=="comparator"){
-
-    } else if(params.subcommand=="bed"){
-
+    }
+    else if(params.subcommand=="bed"){
+        print """run_needLR_bed(
+                ${ch_inputs},
+                ${ch_ids},
+                ${params.region},
+                ${annotation_string},
+            )"""
     } else {
         throw new IllegalArgumentException("Invalid subcommand: ${params.subcommand}")
     }

@@ -9,7 +9,6 @@ process run_needLR_bed {
         val( sample_id )
         val( region )
         val( annotations )
-        val( isMerged )
 
     output:
         path "${sample_id}_needLR_bed_v4.0", emit: results_folder

@@ -23,9 +23,9 @@ Changes from 3.4 -> 3.5
 * UTRs and coding exons (CDS) are annotated seperately
 * Vamos STR and VNTR are combined into one annotation
 
-Access the deprecated needLR_v3.4 README [here](https://github.com/millerlab/needLR/blob/main/docs/needLR_v3.4_README_depricated_20251213.md)
+Access the deprecated needLR_v3.4 README [here](https://github.com/millerlaboratory/needLR/blob/main/docs/needLR_v3.4_README_depricated_20251213.md)
 
-Access the deprecated needLR_v3.5 README [here](https://github.com/millerlab/needLR/blob/main/docs/needLR_v3.4_README_deprecated_20260403.md)
+Access the deprecated needLR_v3.5 README [here](https://github.com/millerlaboratory/needLR/blob/main/docs/needLR_v3.4_README_deprecated_20260403.md)
 
 #### Please cite our 2025 needLR preprint:  
 <sup>*Gustafson JA, Lin J, Zalusky MPG, Eichler EE, Miller DE. needLR: Long-read structural variant annotation with population-scale frequency estimation. arXiv preprint arXiv:2512.08175. 2025 Dec 9.*</sup>
@@ -71,7 +71,7 @@ needLR_v4.0 has three subcommands:
 * [comparator](#subcommand-comparator): Compares a single query sample and one or two parental samples to a pre-merged, multisample vcf of 500 1KGP samples and annotates the SVs in the query individual. This function uniquely annotates the SVs from the query vcf as being "inherited", "maternal", "paternal", "de_novo", or "not_inherited" based on SVs from the parental vcf(s).
 * [bed](#subcommand-bed): Annotates any sorted bed file with needLR annotations
 
-[Follow these steps to make a custom cohort for use either as a query or a control.](https://github.com/millerlab/needLR/blob/main/docs/custom_cohort.md)
+[Follow these steps to make a custom cohort for use either as a query or a control.](https://github.com/millerlaboratory/needLR/blob/main/docs/custom_cohort.md)
 
 >[!NOTE]
 >needLR is currently optimized for sniffles_v2.6.2 SV calling, truvari_v4.2.2 merging, and all backend annotation data is based on the GRCh38 reference genome
@@ -121,7 +121,7 @@ If using a custom installation, you **must** use flag `-B` with your path to the
    -H                     : [ help ]
    ```
 
-Alternatively, you can run needLR through our nextflow wrapper, which can speed up running many samples at once when a server or cluster with many cpus is available. [See the documentation here.](https://github.com/millerlab/needLR/blob/nextflow/nextflow/nextflow_readme.md)
+Alternatively, you can run needLR through our nextflow wrapper, which can speed up running many samples at once when a server or cluster with many cpus is available. [See the documentation here.](https://github.com/millerlaboratory/needLR/blob/nextflow/nextflow/nextflow_readme.md)
 
 ### Subcommand: annotate
 

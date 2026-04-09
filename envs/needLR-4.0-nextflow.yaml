@@ -3,8 +3,5 @@ channels:
   - base
   - bioconda
 dependencies:
-  - bedtools=2.31.1
-  - bcftools=1.23.1
-  - truvari=4.2.2
-  - gawk=5.3.1
+  - needlr=4.0
   - nextflow=25.10.4

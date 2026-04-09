@@ -57,7 +57,7 @@ conda activate needLRNextflow
 |--hiconf|annotate overlap with high confidence regions (default true)|
 |--example| only include this if you are running the example. Allows for paths relative to launchdir in `fileList`|
 
-See the[(Nextflow Documentation](https://www.nextflow.io/docs/stable/reference/cli.html) for more general command line options. This is especially relevant if running the nextflow on a cluster.
+See the [Nextflow Documentation](https://www.nextflow.io/docs/stable/reference/cli.html) for more general command line options. This is especially relevant if running the nextflow on a cluster.
 
 
 ## Examples

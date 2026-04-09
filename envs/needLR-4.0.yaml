@@ -7,3 +7,5 @@ dependencies:
   - bcftools=1.23.1
   - truvari=4.2.2
   - gawk=5.3.1
+  - coreutils=9.5
+  - sed=4.7

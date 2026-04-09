@@ -78,7 +78,14 @@ needLR_v4.0 has three subcommands:
 
 ## INSTALLATION AND SET UP
 
-NeedLR will soon be available to install using bioconda and docker. Until then:
+Please install needLR using conda. Check back for availability of needlr through biocontainers.
+
+Build an environment for needLR to run in like so:
+
+```
+conda create -n needLR-4.0 -c bioconda -c conda-forge needlr=4.0
+conda activate needLR-4.0
+```
 
 Alternatively, you can make a custom conda installation following these steps:
 

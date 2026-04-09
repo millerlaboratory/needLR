@@ -1,0 +1,7 @@
+channels:
+  - conda-forge
+  - base
+  - bioconda
+dependencies:
+  - needlr=4.0
+  - nextflow=25.10.4

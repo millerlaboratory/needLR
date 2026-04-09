@@ -1,0 +1,2 @@
+examples/inputs/single_genome_example_chr22.vcf.gz
+examples/inputs/HG005_Pb_hantrio_sniffles_chr22.vcf.gz

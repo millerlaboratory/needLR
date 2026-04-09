@@ -27,7 +27,7 @@ Clone this repository and run `main.nf` from the `nextflow` subdirectory of `nee
 Make one with conda:
 
 ```conda create env -n needLRNextflow
-conda install -n needLRNextflow -c bioconda needLR=4.0 nextflow=25.10.4
+conda install -n needLRNextflow -c bioconda needlr=4.0 nextflow=25.10.4
 conda activate needLRNextflow
 ```
 

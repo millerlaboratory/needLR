@@ -3,7 +3,7 @@
 
 ## INTRODUCTION
 
-🚧 ** **_needLR  is currently a beta version and actively under construction_** ** 🚧
+🚧 ** **_needLR  is actively under construction_** ** 🚧
 
 needLR_v4.0 has replaced needLR_v3.5 as of April 3rd, 2026. Major changes include:
 * needLR modes are now subcommands -- please see updated usage

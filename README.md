@@ -146,7 +146,9 @@ If using a custom installation, you **must** use flag `-B` with your path to the
   ``` -B                     : [ path to folder containing backend files for non-conda custom installation ]
    -T                     : [ additional CPU threads to pass to bcftools ]
    -R                     : [ restrict analysis to region (e.g. chr1:23456-34567) ]
+   -B                     : [ the full path to needLR's back end file folder, only used in custom installations ]
    -H                     : [ help ]
+
    ```
 
 Alternatively, you can run needLR through our nextflow wrapper, which can speed up running many samples at once when a server or cluster with many cpus is available. [See the documentation here.](https://github.com/millerlaboratory/needLR/blob/nextflow/nextflow/nextflow_readme.md)

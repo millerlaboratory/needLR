@@ -101,10 +101,10 @@ podman pull quay.io/biocontainers/needlr
 ```
 
 
-To run using docker, append `docker run biocontainers/needlr` to the beginning of any needLR command.
+To run using docker, append `docker run quay.io/biocontainers/needlr` to the beginning of any needLR command.
 
 
-Example: `docker run biocontainers/needlr needLR annotate example.vcf.gz`
+Example: `docker run quay.io/biocontainers/needlr needLR annotate example.vcf.gz`
 
 
 Alternatively, you can make a custom conda installation following these steps:

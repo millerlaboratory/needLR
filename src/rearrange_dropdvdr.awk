@@ -38,16 +38,6 @@ BEGIN{
         $(i+2)=""
     }
     $2=$2"\t."
-    #printf(%s\t%s\t%s\t%s\t%s\t%s",
-    #     $chr, $pos, $ref, $alt, $svlen, $svtype, $svgt)
-    # Now print the variable columns in a loop
-    #for (i = qstart; i <= qend; i += step) {
-    #    printf("\t%s", $i)
-    #}
-    # And print the control variable columns in a loop (gt only)
-    #for (i = start; i <= end; i += step) {
-    #    printf("\t%s", $i)
-    #}
-    #printf("\n")
+
     print $0
 }

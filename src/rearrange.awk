@@ -39,16 +39,4 @@ BEGIN{
     }
     $2=$2"\t."
     print $0
-    #printf("%s\t%s\t%s\t%s\t%s\t%s",
-    #     $chr, $pos, $ref, $alt, $svlen, $svtype, $svgt)
-    # Now print the variable columns in a loop
-    #for (i = qstart; i <= qend; i += step) {
-    #    totalreads=($i+1)+($i+2)
-    #    printf("\t%s\t%s\t%s\t%s", $i, $i+1, $i+2, totalreads)
-    #}
-    # And print the control variable columns in a loop (gt only)
-    #for (i = start; i <= end; i += step) {
-    #    printf("\t%s", $i)
-    #}
-    #printf("\n")
 }

@@ -78,7 +78,7 @@ needLR_v4.0 has three subcommands:
 
 ## INSTALLATION AND SET UP
 
-Please install needLR using conda or docker/podman/singularity. 
+Please install needLR using conda.
 
 ### Conda
 
@@ -89,22 +89,6 @@ conda create -n needLR-4.0 -c bioconda -c conda-forge needlr=4.0
 conda activate needLR-4.0
 ```
 
-### Docker/Podman
-
-```
-docker pull quay.io/biocontainers/needlr
-```
-*or*
-
-```
-podman pull quay.io/biocontainers/needlr
-```
-
-
-To run using docker, append `docker run quay.io/biocontainers/needlr` to the beginning of any needLR command.
-
-
-Example: `docker run quay.io/biocontainers/needlr needLR annotate example.vcf.gz`
 
 
 Alternatively, you can make a custom conda installation following these steps:
